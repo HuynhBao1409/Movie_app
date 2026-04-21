@@ -13,6 +13,8 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "nativewind-env.d.ts"
+    "nativewind-env.d.ts",
+    "../../../react-native-movie-app-main/constants/icons.ts",
+    "../../../react-native-movie-app-main/constants/images.ts"
   ]
 }
