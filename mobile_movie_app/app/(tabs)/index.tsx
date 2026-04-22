@@ -44,7 +44,7 @@ export default function Index() {
             tintColor="transparent"
             colors={["transparent"]}
             progressBackgroundColor="transparent"
-            progressViewOffset={28}
+            progressViewOffset={1000}
           />
         }
       >
