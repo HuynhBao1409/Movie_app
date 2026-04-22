@@ -36,9 +36,16 @@ export default function Index() {
       <ScrollView
         className="flex-1 px-5"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ minHeight: "100%", paddingBottom: 10 }}
+        contentContainerStyle={{ minHeight: "50%", paddingBottom: 10 }}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#E50914" />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="transparent"
+            colors={["transparent"]}
+            progressBackgroundColor="transparent"
+            progressViewOffset={28}
+          />
         }
       >
         <Image source={icons.logo} className="w-12 h-10 m-20 mb-5 mx-auto" />

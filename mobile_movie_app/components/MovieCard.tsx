@@ -16,10 +16,12 @@ const MovieCard = ({ id, poster_path, title, vote_average, release_date }: Movie
                 }}
                     className="w-full h-52 rounded-lg" resizeMode="cover"
                 />
+                {/* Title */}
                 <Text className="text-sm font-bold text-white mt-2" numberOfLines={1}>{title}</Text>
-
+                {/* Star */}
                 <View className="flex-row items-center justify-start gap-x-1">
                     <Image source={icons.star} className='size-4' />
+                    {/* TMDB trả điểm theo thang 10, chia 2 để đổi sang thang 5 sao và giữ 1 số thập phân. */}
                     <Text className='text-xs text-white font-bold uppercase'>{(vote_average / 2).toFixed(1)}</Text>
                 </View>
 
