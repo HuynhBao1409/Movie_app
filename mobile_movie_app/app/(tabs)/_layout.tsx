@@ -1,26 +1,30 @@
 import { icons } from "@/constants/icons";
-import { images } from "@/constants/images";
 import { Tabs } from "expo-router";
 import React from 'react';
-import { Image, ImageBackground, Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 
 // Reusable icon renderer for each tab item.
 const TabIcon = ({ focused, icon, title }: any) => {
     if (focused) {
         return (
-            <ImageBackground source={images.highlight} className="flex flex-row w-full flex-1 min-w-[112px] min-h-16 mt-4 justify-center items-center rounded-full overflow-hidden">
+            // <ImageBackground source={images.highlight} className="flex flex-row w-full flex-1 min-w-[112px] min-h-16 mt-4 justify-center items-center rounded-full overflow-hidden">
+            <View style={{ backgroundColor: '#E50914', borderRadius: 999, paddingHorizontal: 16, paddingVertical: 6 }}
+                className="flex flex-row min-w-[112px] min-h-16 mt-4 justify-center items-center">
                 <Image
                     source={icon}
-                    tintColor="#151312"
+                    tintColor="#FFFFFF" // [OLD] tintColor="#151312"
                     className="size-5"
                 />
-                <Text className="text-secondary text-base font-semibold ml-2">{title}</Text>
-            </ImageBackground>
+                {/* [OLD] className="text-secondary ..." */}
+                <Text className="text-white text-base font-semibold ml-2">{title}</Text>
+                {/* </ImageBackground> */}
+            </View>
         )
     }
     return (
         <View className="size-full justify-center items-center mt-4 rounded-full">
-            <Image source={icon} tintColor="#A8B5DB" className="size-5" />
+            {/* [OLD] #A8B5DB */}
+            <Image source={icon} tintColor="#E50914" className="size-5" />
         </View>
     )
 
@@ -40,7 +44,7 @@ const _layout = () => {
                     alignItems: 'center',
                 },
                 tabBarStyle: {
-                    backgroundColor: '#0f0D23',
+                    backgroundColor: '#141414', // [OLD] '#0f0D23'
                     borderRadius: 50,
                     marginHorizontal: 20,
                     marginBottom: 36,
@@ -48,7 +52,7 @@ const _layout = () => {
                     position: 'absolute',
                     overflow: 'hidden',
                     borderWidth: 1,
-                    borderColor: '0f0d23'
+                    borderColor: '#2a2a2a', // [OLD] '#0f0d23'
                 },
             }}
         >
