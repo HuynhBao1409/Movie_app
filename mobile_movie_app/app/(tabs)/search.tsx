@@ -6,7 +6,7 @@ import { fetchMovies } from '@/services/api'
 import useFetch from '@/services/useFetch'
 import React, { useEffect, useState } from 'react'
 import { ActivityIndicator, FlatList, Image, Text, View } from 'react-native'
-
+// === Search page ===
 const Search = () => {
     // State lưu text user đang nhập ở ô search
     const [searchQuery, setSearchQuery] = useState('');
@@ -72,7 +72,7 @@ const Search = () => {
 
                         {/* Error */}
                         {error && (
-                            <Text className='text-orange-500 px-5 my-3'>
+                            <Text className='text-red-500 px-5 my-3'>
                                 Error: {error.message}
                             </Text>
                         )}

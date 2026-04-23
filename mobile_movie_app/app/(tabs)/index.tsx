@@ -41,7 +41,8 @@ export default function Index() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            progressViewOffset={1000}
+            progressViewOffset={-100}
+            tintColor="transparent"
           />
         }
       >
