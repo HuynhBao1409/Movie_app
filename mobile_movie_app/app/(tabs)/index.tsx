@@ -41,15 +41,13 @@ export default function Index() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="transparent"
-            colors={["transparent"]}
-            progressBackgroundColor="transparent"
             progressViewOffset={1000}
           />
         }
       >
         <Image source={icons.logo} className="w-12 h-10 m-20 mb-5 mx-auto" />
-        {moviesLoading ? (<ActivityIndicator size="large" color="#0000ff" className="mt-10 self-center" />
+        {/* Loading */}
+        {moviesLoading ? (<ActivityIndicator size="small" color="#E50914" className="mt-10 self-center" />
         ) : moviesError ? (<Text>Error: {moviesError?.message}</Text>) : (
           // SearchBar
           < View className="flex-1 mt-5">
