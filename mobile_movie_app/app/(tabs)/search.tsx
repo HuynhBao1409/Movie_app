@@ -3,12 +3,12 @@ import SearchBar from '@/components/SearchBar'
 import { icons } from '@/constants/icons'
 import { images } from '@/constants/images'
 import { fetchMovies } from '@/services/api'
+import { updateSearchCount } from '@/services/appwrite'
 import useFetch from '@/services/useFetch'
 import React, { useEffect, useState } from 'react'
 import { ActivityIndicator, FlatList, Image, Text, View } from 'react-native'
 // === Search page ===
 const Search = () => {
-    // State lưu text user đang nhập ở ô search
     const [searchQuery, setSearchQuery] = useState('');
 
     // Hook fetch dữ liệu phim theo query hiện tại
@@ -27,7 +27,15 @@ const Search = () => {
         const timeoutId = setTimeout(async () => {
 
             if (searchQuery.trim()) {
-                await loadMovies();
+                const fetchedMovies = await loadMovies();
+                if (Array.isArray(fetchedMovies) && fetchedMovies.length > 0 && fetchedMovies[0]) {
+                    try {
+                        await updateSearchCount(searchQuery, fetchedMovies[0]);
+                    } catch (trackingError) {
+                        // Loi tracking khong duoc phep lam hong luong tim kiem.
+                        console.log('updateSearchCount failed:', trackingError);
+                    }
+                }
             } else {
                 reset();
             }
@@ -65,12 +73,10 @@ const Search = () => {
                             />
                         </View>
 
-                        {/* Loading */}
                         {loading && (
                             <ActivityIndicator size='small' color='#E50914' className='my-3' />
                         )}
 
-                        {/* Error */}
                         {error && (
                             <Text className='text-red-500 px-5 my-3'>
                                 Error: {error.message}
@@ -87,7 +93,6 @@ const Search = () => {
                     </>
                 }
                 ListEmptyComponent={
-                    // Không có item để render
                     !loading && !error ? (
                         <View className='mt-10 px-5'>
                             <Text className='text-center text-gray-500'>

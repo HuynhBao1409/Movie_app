@@ -15,6 +15,7 @@ interface Props {
 const SearchBar = ({ placeholder, value, onPress, onChangeText }: Props) => {
     // true khi có text và có thể clear bằng callback
     const canClear = Boolean(onChangeText && value?.length);
+    const isEditable = Boolean(onChangeText);
 
     // Layout chính của search bar: icon, input và nút clear
     const content = (
@@ -24,6 +25,7 @@ const SearchBar = ({ placeholder, value, onPress, onChangeText }: Props) => {
                 placeholder={placeholder}
                 value={value}
                 onChangeText={onChangeText}
+                editable={isEditable}
                 placeholderTextColor="#a8b8db"
                 className='flex-1 ml-2 text-white'
             />

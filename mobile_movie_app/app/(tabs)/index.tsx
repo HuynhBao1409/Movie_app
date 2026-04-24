@@ -41,7 +41,7 @@ export default function Index() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            progressViewOffset={-100}
+            progressViewOffset={30}
             tintColor="transparent"
           />
         }
@@ -53,7 +53,7 @@ export default function Index() {
           // SearchBar
           < View className="flex-1 mt-5">
             <SearchBar
-              onPress={() => router.push("/search")} placeholder="Search for a movie"
+              onPress={() => router.push("/(tabs)/search")} placeholder="Search for a movie"
             />
 
             <>
