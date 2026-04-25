@@ -9,9 +9,10 @@ import React, { useEffect, useState } from 'react'
 import { ActivityIndicator, FlatList, Image, Text, View } from 'react-native'
 // === Search page ===
 const Search = () => {
+    // --- Search Query State ---
     const [searchQuery, setSearchQuery] = useState('');
 
-    // Hook fetch dữ liệu phim theo query hiện tại
+    // --- Fetch Movies by Query ---
     const {
         data: movies,
         loading,
@@ -22,7 +23,7 @@ const Search = () => {
             query: searchQuery
         }), false)
 
-    // Debounce 500ms: chỉ call API sau khi user ngừng gõ
+    // --- Debounce Search Input (700ms delay) ---
     useEffect(() => {
         const timeoutId = setTimeout(async () => {
 
@@ -39,20 +40,22 @@ const Search = () => {
             } else {
                 reset();
             }
-        }, 500);
+        }, 700);
         return () => clearTimeout(timeoutId);
     }, [searchQuery]);
 
+    // --- Search Screen UI ---
     return (
         <View className='flex-1 bg-primary'>
-            {/* Background*/}
+            {/* Background Image */}
             <Image source={images.bg} className='flex-1 absolute w-full z-0' resizeMode='cover' tintColor="#E50914" />
 
+            {/* Search Results List */}
             <FlatList
                 // Danh sách kết quả phim
                 data={movies ?? []}
                 renderItem={({ item }) => <MovieCard {...item} />}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(item, index) => `${item.id}-${index}`}
                 numColumns={3}
                 columnWrapperStyle={{ justifyContent: 'center', gap: 20, paddingRight: 5, marginBottom: 16 }}
                 className='px-5 mt-5'
@@ -60,11 +63,12 @@ const Search = () => {
 
                 ListHeaderComponent={
                     <>
-                        {/* Logo */}
+                        {/* App Logo */}
                         <View className='w-full flex-row justify-center mt-20 items-center'>
                             <Image source={icons.logo} className='w-12 h-10' />
                         </View>
-                        {/* Ô search và xử lý nhập text */}
+
+                        {/* Search Input Field */}
                         <View className='my-5'>
                             <SearchBar
                                 placeholder='Search movies...'
@@ -73,17 +77,19 @@ const Search = () => {
                             />
                         </View>
 
+                        {/* Loading Indicator */}
                         {loading && (
                             <ActivityIndicator size='small' color='#E50914' className='my-3' />
                         )}
 
+                        {/* Error Message */}
                         {error && (
                             <Text className='text-red-500 px-5 my-3'>
                                 Error: {error.message}
                             </Text>
                         )}
 
-                        {/* Search Results */}
+                        {/* Search Results Header */}
                         {!loading && !error && searchQuery.trim() && (movies?.length ?? 0) > 0 && (
                             <Text className='text-xl text-white font-bold'>
                                 Search Results for {' '}
@@ -92,6 +98,8 @@ const Search = () => {
                         )}
                     </>
                 }
+
+                // Empty State Message
                 ListEmptyComponent={
                     !loading && !error ? (
                         <View className='mt-10 px-5'>

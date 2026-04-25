@@ -6,10 +6,8 @@ interface Props {
     // Text hiển thị gợi ý 
     placeholder: string;
     onPress?: () => void;
-    // Giá trị hiện tại của ô search
     value?: string;
-    // Callback cập nhật giá trị khi user nhập
-    onChangeText?: (text: string) => void;
+    onChangeText?: (text: string) => void;  // Callback cập nhật giá trị khi user nhập
 }
 
 const SearchBar = ({ placeholder, value, onPress, onChangeText }: Props) => {
