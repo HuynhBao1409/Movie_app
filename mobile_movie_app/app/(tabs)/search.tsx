@@ -9,7 +9,6 @@ import React, { useEffect, useState } from 'react'
 import { ActivityIndicator, FlatList, Image, Text, View } from 'react-native'
 // === Search page ===
 const Search = () => {
-    // --- Search Query State ---
     const [searchQuery, setSearchQuery] = useState('');
 
     // --- Fetch Movies by Query ---
@@ -23,7 +22,7 @@ const Search = () => {
             query: searchQuery
         }), false)
 
-    // --- Debounce Search Input (700ms delay) ---
+    // --- Debounce Search Input (500ms delay) ---
     useEffect(() => {
         const timeoutId = setTimeout(async () => {
 
@@ -40,7 +39,7 @@ const Search = () => {
             } else {
                 reset();
             }
-        }, 700);
+        }, 500);
         return () => clearTimeout(timeoutId);
     }, [searchQuery]);
 

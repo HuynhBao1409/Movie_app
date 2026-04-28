@@ -9,7 +9,7 @@ import useFetch from "@/services/useFetch";
 import { useIsFocused } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Image, RefreshControl, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, Image, ScrollView, Text, View } from "react-native";
 
 // === Home page ===
 export default function Index() {
@@ -61,14 +61,6 @@ export default function Index() {
         className="flex-1 px-5"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ minHeight: "50%", paddingBottom: 10 }}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            progressViewOffset={-100}
-            tintColor="transparent"
-          />
-        }
       >
         <Image source={icons.logo} className="w-12 h-10 m-20 mb-5 mx-auto" />
         {/* Loading */}

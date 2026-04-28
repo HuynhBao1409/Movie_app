@@ -15,9 +15,11 @@ const client = new Client()
 const database = new Databases(client);
 
 const fetchVoteAverageByMovieId = async (movieId: number): Promise<number | undefined> => {
+    // Không có API key thì không gọi TMDB được -> trả undefined để caller tự fallback.
     if (!TMDB_API_KEY) return undefined;
 
     try {
+        // Gọi endpoint chi tiết phim để lấy vote_average theo movieId.
         const response = await fetch(`${TMDB_BASE_URL}/movie/${movieId}?language=en-US`, {
             method: "GET",
             headers: {
@@ -72,7 +74,7 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
                     updatePayload
                 )
             } catch {
-                // Backward compatibility: collection may not have vote_average yet.
+                // Fallback cho schema cũ: nếu chưa có vote_average thì chỉ update các field legacy
                 await database.updateDocument(
                     DATABASE_ID,
                     COLLECTION_ID,
@@ -98,7 +100,7 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
             try {
                 await database.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), createPayload)
             } catch {
-                // Backward compatibility: collection may not have vote_average yet.
+                // Fallback nếu create với vote_average lỗi thì tạo document không có field
                 await database.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), {
                     searchTerm: normalizedQuery,
                     movie_id: movie.id,
@@ -116,31 +118,34 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
 
 // === GET TRENDING MOVIES ===
 /**
- * Lấy 5 phim trending từ Appwrite.
+ * Lấy 5 phim trending từ Appwrite
  * Sắp xếp theo:
  *   1. Thời gian cập nhật mới nhất ($updatedAt giảm dần)
  *   2. Số lượt search (count giảm dần)
  */
 export const getTrendingMovies = async (): Promise<TrendingMovie[] | undefined> => {
     try {
-        // --- Fetch with sorting: newest first, then highest count ---
+        // Lấy dữ liệu và sắp xếp: mới cập nhật trước, sau đó đến lượt tìm kiếm cao
         const result = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [
             Query.orderDesc('$updatedAt'),
             Query.orderDesc('count'),
-            Query.limit(5),
+            Query.limit(10),
         ])
 
         const hydratedMovies = await Promise.all(
             result.documents.map(async (doc) => {
                 const currentVoteAverage = Number((doc as { vote_average?: unknown }).vote_average);
 
+                // Bản ghi đã có vote_average hợp lệ thì dùng luôn
                 if (Number.isFinite(currentVoteAverage)) {
                     return doc;
                 }
 
+                // Bản ghi cũ thiếu vote_average: gọi TMDB để bổ sung theo movie_id
                 const movieId = Number((doc as Record<string, unknown>).movie_id);
                 const fallbackVoteAverage = await fetchVoteAverageByMovieId(movieId);
 
+                // Nếu không lấy được điểm từ TMDB thì fallback về 0 để UI không bị rỗng.
                 if (!Number.isFinite(fallbackVoteAverage)) {
                     return {
                         ...doc,
@@ -148,7 +153,7 @@ export const getTrendingMovies = async (): Promise<TrendingMovie[] | undefined> 
                     };
                 }
 
-                // Best-effort sync so old records stop returning empty vote_average.
+                // Thử đồng bộ ngược lên Appwrite để các bản ghi cũ có vote_average.
                 try {
                     await database.updateDocument(
                         DATABASE_ID,
@@ -157,7 +162,7 @@ export const getTrendingMovies = async (): Promise<TrendingMovie[] | undefined> 
                         { vote_average: fallbackVoteAverage }
                     );
                 } catch {
-                    // Ignore sync failure and still return hydrated value for UI.
+                    // Nếu đồng bộ thất bại thì vẫn trả giá trị đã bổ sung cho UI.
                 }
 
                 return {

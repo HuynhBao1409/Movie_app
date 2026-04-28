@@ -1,12 +1,13 @@
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
-import { Image, Text, View } from "react-native";
+import { Image, StatusBar, Text, View } from "react-native";
 import "../global.css";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+
   const [progress, setProgress] = useState(0);
   const [ready, setReady] = useState(false);
 
@@ -52,15 +53,22 @@ export default function RootLayout() {
     );
   }
 
-  return <Stack>
-    <Stack.Screen
-      name="(tabs)"
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      name="movies/[id]"
-      options={{ headerShown: false }}
-    />
+  return (
+    <>
+      <StatusBar hidden={true} />
 
-  </Stack>
+      <Stack>
+
+        <Stack.Screen
+          name="(tabs)"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="movies/[id]"
+          options={{ headerShown: false }}
+        />
+
+      </Stack>
+    </>
+  )
 }

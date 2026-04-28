@@ -70,3 +70,29 @@ export const fetchMovies = async ({ query }: { query: string }) => {
         return (b.popularity ?? 0) - (a.popularity ?? 0);
     });
 }
+
+
+// ===== FUNCTION: fetchMovieDetails =====
+// Lấy chi tiết đầy đủ của một bộ phim từ TMDB API
+// Tham số:
+//   - movieId: ID của phim cần lấy thông tin
+// Trả về: Promise<MovieDetails> chứa tất cả dữ liệu phim (poster, title, budget, revenue, genres, v.v.)
+export const fetchMovieDetails = async (movieId: string): Promise<MovieDetails> => {
+    try {
+        // ===== GỬI REQUEST TỚI TMDB API =====
+        // Xây dựng URL với movie ID và API key
+        const response = await fetch(`${TMDB_CONFIG.BASE_URL}/movie/${movieId}?api_key=${TMDB_CONFIG.API_KEY}`, {
+            method: 'GET',
+            headers: TMDB_CONFIG.headers,
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch movie detail');
+
+        const data = await response.json();
+
+        return data;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
