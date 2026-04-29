@@ -76,3 +76,10 @@ interface TrendingCardProps {
   movie: TrendingMovie;
   index: number;
 }
+
+interface Cast {
+  id: number;
+  name: string;
+  character: string;
+  profile_path: string | null;
+}
