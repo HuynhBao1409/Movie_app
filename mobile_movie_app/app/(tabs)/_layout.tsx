@@ -95,6 +95,14 @@ const _layout = () => {
                         <TabIcon focused={focused} icon={icons.person} title="Profile" />)
                 }}
             />
+            <Tabs.Screen
+                name="notifications"
+                options={{
+                    title: 'Notifications',
+                    headerShown: false,
+                    href: null, // ẩn khỏi tab bar, chỉ navigate bằng router.push
+                }}
+            />
         </Tabs>
     )
 }
