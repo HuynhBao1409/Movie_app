@@ -1,8 +1,10 @@
+import { AuthProvider } from '@/context/AuthContext';
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { Image, StatusBar, Text, View } from "react-native";
 import "../global.css";
+
 
 SplashScreen.preventAutoHideAsync();
 
@@ -38,7 +40,7 @@ export default function RootLayout() {
           className="w-28 h-28"
           resizeMode="contain"
         />
-        <Text className="text-white text-xl font-bold mt-5">MovieFlix</Text>
+        <Text className="text-white text-xl font-bold mt-5">MovieChill</Text>
 
         {/* Thanh load ngang tăng dần theo progress state. */}
         <View className="w-full h-1 bg-zinc-800 rounded-full mt-8 overflow-hidden">
@@ -54,21 +56,14 @@ export default function RootLayout() {
   }
 
   return (
-    <>
+    <AuthProvider>
       <StatusBar hidden={true} />
-
       <Stack>
-
-        <Stack.Screen
-          name="(tabs)"
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="movies/[id]"
-          options={{ headerShown: false }}
-        />
-
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="admin" options={{ headerShown: false }} />
+        <Stack.Screen name="movies/[id]" options={{ headerShown: false }} />
       </Stack>
-    </>
-  )
+    </AuthProvider>
+  );
 }

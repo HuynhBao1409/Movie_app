@@ -100,7 +100,14 @@ const _layout = () => {
                 options={{
                     title: 'Notifications',
                     headerShown: false,
-                    href: null, // ẩn khỏi tab bar, chỉ navigate bằng router.push
+                    href: null,
+                }}
+            />
+            <Tabs.Screen
+                name="edit-profile"
+                options={{
+                    headerShown: false,
+                    href: null,
                 }}
             />
         </Tabs>
