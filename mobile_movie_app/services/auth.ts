@@ -64,6 +64,7 @@ export const updateProfile = async (documentId: string, data: {
     username?: string;
     avatar_url?: string;
     bio?: string;
+    phone?: string;
 }) => {
     return await databases.updateDocument(DATABASE_ID, PROFILES_COLLECTION_ID, documentId, data);
 };

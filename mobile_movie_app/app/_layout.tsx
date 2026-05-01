@@ -40,7 +40,7 @@ export default function RootLayout() {
           className="w-28 h-28"
           resizeMode="contain"
         />
-        <Text className="text-white text-xl font-bold mt-5">MovieChill</Text>
+        <Text className="text-white text-xl font-bold mt-5">MotChill</Text>
 
         {/* Thanh load ngang tăng dần theo progress state. */}
         <View className="w-full h-1 bg-zinc-800 rounded-full mt-8 overflow-hidden">

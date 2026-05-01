@@ -31,7 +31,6 @@ const MenuItem = ({ icon, label, value, onPress, rightElement }: {
 );
 
 const Profile = () => {
-    // ✅ Lấy data thật từ AuthContext
     const { user, profile, signOut } = useAuth();
     const [isDarkMode, setIsDarkMode] = useState(true);
 
@@ -66,7 +65,7 @@ const Profile = () => {
                         </View>
                     </TouchableOpacity>
 
-                    {/* ✅ Name & Email từ Appwrite */}
+                    {/* Name & Email */}
                     <Text className='text-white text-xl font-bold'>
                         {profile?.username ?? user?.name ?? 'User'}
                     </Text>
@@ -153,7 +152,7 @@ const Profile = () => {
                 {/* ===== Logout ===== */}
                 <TouchableOpacity
                     className='mx-4 mt-6 py-4 rounded-2xl border border-accent items-center'
-                    onPress={signOut}  // ✅ gọi signOut từ AuthContext
+                    onPress={signOut}
                 >
                     <Text className='text-accent font-semibold text-base'>Log out</Text>
                 </TouchableOpacity>

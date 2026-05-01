@@ -16,8 +16,18 @@ export default function EditProfile() {
 
     const [username, setUsername] = useState(profile?.username ?? '');
     const [bio, setBio] = useState(profile?.bio ?? '');
+    const [phone, setPhone] = useState(profile?.phone ?? '');
+    const [hidePhoneTail, setHidePhoneTail] = useState(true);
     const [avatarUri, setAvatarUri] = useState<string | null>(profile?.avatar_url ?? null);
     const [loading, setLoading] = useState(false);
+
+    const maskPhoneTail = (value: string) => {
+        if (!value) return '';
+        if (value.length <= 3) return '*'.repeat(value.length);
+        return `${value.slice(0, -3)}***`;
+    };
+
+    const displayedPhone = hidePhoneTail ? maskPhoneTail(phone) : phone;
 
     // ===== Chọn ảnh từ thư viện =====
     const pickImage = async () => {
@@ -49,6 +59,7 @@ export default function EditProfile() {
             const updated = await updateProfile(profile.$id, {
                 username: username.trim(),
                 bio: bio.trim(),
+                phone: phone.trim(),
                 avatar_url: avatarUri ?? undefined,
             });
             // Update AuthContext
@@ -56,10 +67,11 @@ export default function EditProfile() {
                 ...profile,
                 username: username.trim(),
                 bio: bio.trim(),
+                phone: phone.trim(),
                 avatar_url: avatarUri ?? profile.avatar_url,
             });
             Alert.alert('Success', 'Profile updated!', [
-                { text: 'OK', onPress: () => router.back() }
+                { text: 'OK', onPress: () => router.replace('/(tabs)/profile') }
             ]);
         } catch (e: any) {
             Alert.alert('Error', e?.message ?? 'Update failed');
@@ -73,11 +85,11 @@ export default function EditProfile() {
             <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
                 {/* ===== Header ===== */}
                 <View className='flex-row items-center px-5 pt-16 pb-4 border-b border-dark-100'>
-                    <TouchableOpacity onPress={router.back} className='mr-4'>
+                    <TouchableOpacity onPress={() => router.replace('/(tabs)/profile')} className='mr-4'>
                         <Image source={icons.arrow} className='size-5 rotate-180' tintColor='#fff' />
                     </TouchableOpacity>
                     <Text className='text-white text-lg font-bold flex-1'>Edit Profile</Text>
-                    {/* Nút Save góc phải */}
+                    {/* Nút Save  */}
                     <TouchableOpacity onPress={handleSave} disabled={loading}>
                         {loading ? (
                             <ActivityIndicator color='#E50914' />
@@ -145,6 +157,25 @@ export default function EditProfile() {
                         multiline
                         numberOfLines={4}
                         style={{ height: 100, textAlignVertical: 'top' }}
+                    />
+
+                    {/* Phone */}
+                    <View className='flex-row items-center justify-between mb-2'>
+                        <Text className='text-light-300 text-xs uppercase tracking-widest'>Phone</Text>
+                        <TouchableOpacity onPress={() => setHidePhoneTail((prev) => !prev)}>
+                            <Text className='text-accent text-xs font-semibold'>
+                                {hidePhoneTail ? 'Show full' : 'Hide tail'}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                    <TextInput
+                        className='bg-secondary text-white rounded-xl px-4 py-3.5'
+                        placeholder='Enter phone number'
+                        placeholderTextColor='#9CA4AB'
+                        value={displayedPhone}
+                        onChangeText={setPhone}
+                        keyboardType='phone-pad'
+                        editable={!hidePhoneTail}
                     />
                 </View>
             </ScrollView>
