@@ -19,14 +19,38 @@ export const register = async (email: string, password: string, username: string
         userId: user.$id,
         username,
         phone,
+        email,
         role: 'user',
     });
     return user;
 };
+// ===== GET EMAIL BY USERNAME =====
+const getEmailByUsername = async (username: string): Promise<string | null> => {
+    try {
+        // Query database để tìm document có field "username" trùng với username truyền vào
+        const result = await databases.listDocuments(DATABASE_ID, PROFILES_COLLECTION_ID, [
+            Query.equal('username', username),
+        ]);
+        console.log('FOUND DOCS:', result.documents);
+        if (result.documents.length === 0) return null;
+        return (result.documents[0] as any).email ?? null;
+    } catch {
+        return null;
+    }
+};
+// ===== LOGIN (email hoặc username) =====
+export const login = async (emailOrUsername: string, password: string) => {
+    // Mặc định coi input là email
+    let email = emailOrUsername;
 
-// ===== LOGIN =====
-// Trả về { user, role } để AuthContext biết redirect đâu
-export const login = async (email: string, password: string) => {
+    // Nếu input KHÔNG chứa '@' → coi như username
+    if (!emailOrUsername.includes('@')) {
+        // Gọi hàm để tìm email tương ứng với username
+        const found = await getEmailByUsername(emailOrUsername);
+        if (!found) throw new Error('Username not found');
+        email = found;
+    }
+
     await account.createEmailPasswordSession(email, password);
     const user = await account.get();
     const profile = await getProfile(user.$id);

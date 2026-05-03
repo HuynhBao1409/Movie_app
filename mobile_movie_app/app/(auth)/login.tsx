@@ -46,9 +46,10 @@ export default function Login() {
             {/* Email */}
             <TextInput
                 className='bg-secondary text-white rounded-xl px-4 py-3.5 mb-3'
-                placeholder='Email'
+                placeholder='Email or Username'
                 placeholderTextColor='#9CA4AB'
-                keyboardType='email-address'
+                // keyboardType='email-address'
+                keyboardType='default'
                 autoCapitalize='none'
                 value={email}
                 onChangeText={setEmail}
