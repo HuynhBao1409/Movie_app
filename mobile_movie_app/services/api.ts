@@ -53,8 +53,8 @@ export const fetchMovies = async ({ query }: { query: string }) => {
 
     // Nếu có query → gọi API search, không có → lấy phim phổ biến nhất
     const endpoint = cleanQuery
-        ? `${TMDB_CONFIG.BASE_URL}/search/movie?query=${encodeURIComponent(cleanQuery)}&include_adult=false&language=${getLang()}&page=1`
-        : `${TMDB_CONFIG.BASE_URL}/discover/movie?sort_by=popularity.desc&language=${getLang()}`;
+        ? `${TMDB_CONFIG.BASE_URL}/search/movie?query=${encodeURIComponent(cleanQuery)}&include_adult=false&language=en-US&page=1`
+        : `${TMDB_CONFIG.BASE_URL}/discover/movie?sort_by=popularity.desc&language=en-US`;
     const response = await fetch(endpoint, { method: 'GET', headers: TMDB_CONFIG.headers, });
 
     if (!response.ok) {
@@ -114,7 +114,7 @@ export const fetchMovieDetails = async (movieId: string): Promise<MovieDetails> 
 export const fetchMovieCredits = async (movieId: string) => {
     // Gọi API với `api_key` trong query string để đảm bảo TMDB cho phép request
     const response = await fetch(
-        `${TMDB_CONFIG.BASE_URL}/movie/${movieId}/credits?api_key=${TMDB_CONFIG.API_KEY}&language=${getLang()}`,
+        `${TMDB_CONFIG.BASE_URL}/movie/${movieId}/credits?api_key=${TMDB_CONFIG.API_KEY}&language=en-US`,
         { method: 'GET', headers: TMDB_CONFIG.headers }
     );
     if (!response.ok) throw new Error('Failed to fetch credits');
@@ -128,7 +128,7 @@ export const fetchMovieCredits = async (movieId: string) => {
 // - Trả về: `Movie[]` (mảng kết quả giống format của `/search` hoặc `/discover`)
 export const fetchSimilarMovies = async (movieId: string) => {
     const response = await fetch(
-        `${TMDB_CONFIG.BASE_URL}/movie/${movieId}/similar?api_key=${TMDB_CONFIG.API_KEY}`,
+        `${TMDB_CONFIG.BASE_URL}/movie/${movieId}/similar?api_key=${TMDB_CONFIG.API_KEY}&language=en-US`,
         { method: 'GET', headers: TMDB_CONFIG.headers }
     );
     if (!response.ok) throw new Error('Failed to fetch similar movies');
