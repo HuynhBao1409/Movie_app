@@ -2,6 +2,7 @@ import { icons } from '@/constants/icons';
 import { useAuth } from '@/context/AuthContext';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Image, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
 
 const SectionHeader = ({ title }: { title: string }) => (
@@ -33,6 +34,12 @@ const MenuItem = ({ icon, label, value, onPress, rightElement }: {
 const Profile = () => {
     const { user, profile, signOut } = useAuth();
     const [isDarkMode, setIsDarkMode] = useState(true);
+    // === Translation ===
+    const { t, i18n } = useTranslation();
+
+    const toggleLanguage = () => {
+        i18n.changeLanguage(i18n.language === 'en' ? 'vi' : 'en');
+    };
 
     return (
         <View className='flex-1 bg-primary'>
@@ -82,32 +89,32 @@ const Profile = () => {
                 </View>
 
                 {/* ===== SECTION: Profile ===== */}
-                <SectionHeader title='Profile' />
+                <SectionHeader title={t('sections.profile')} />
                 <View className='bg-secondary rounded-2xl mx-4 overflow-hidden'>
                     <MenuItem
                         icon={icons.person}
-                        label='Edit Profile'
+                        label={t('profile.editProfile')}
                         onPress={() => router.push('/(tabs)/edit-profile')}
                     />
                     <MenuItem
                         icon={icons.save}
-                        label='Saved Movies'
+                        label={t('profile.savedMovies')}
                         onPress={() => router.push('/(tabs)/saved')}
                     />
                 </View>
 
                 {/* ===== SECTION: Preferences ===== */}
-                <SectionHeader title='Preferences' />
+                <SectionHeader title={t('sections.preferences')} />
                 <View className='bg-secondary rounded-2xl mx-4 overflow-hidden'>
                     <MenuItem
                         icon={icons.language}
-                        label='Language'
-                        value='English'
-                        onPress={() => { }}
+                        label={t('profile.language')}
+                        value={i18n.language === 'en' ? 'English' : 'Tiếng Việt'}
+                        onPress={toggleLanguage}
                     />
                     <MenuItem
                         icon={icons.theme}
-                        label='Dark Mode'
+                        label={t('profile.darkMode')}
                         rightElement={
                             <Switch
                                 value={isDarkMode}
@@ -120,31 +127,31 @@ const Profile = () => {
                 </View>
 
                 {/* ===== SECTION: Notifications ===== */}
-                <SectionHeader title='Notifications' />
+                <SectionHeader title={t('sections.notifications')} />
                 <View className='bg-secondary rounded-2xl mx-4 overflow-hidden'>
                     <MenuItem
                         icon={icons.bell}
-                        label='Notifications'
+                        label={t('profile.notifications')}
                         onPress={() => router.push('/(tabs)/notifications')}
                     />
                     <MenuItem
                         icon={icons.money}
-                        label='Donations'
+                        label={t('profile.donations')}
                         onPress={() => { }}
                     />
                 </View>
 
                 {/* ===== SECTION: Account ===== */}
-                <SectionHeader title='Account' />
+                <SectionHeader title={t('sections.account')} />
                 <View className='bg-secondary rounded-2xl mx-4 overflow-hidden'>
                     <MenuItem
                         icon={icons.lock}
-                        label='Change Password'
+                        label={t('profile.changePassword')}
                         onPress={() => { }}
                     />
                     <MenuItem
                         icon={icons.info}
-                        label='About'
+                        label={t('profile.about')}
                         onPress={() => { }}
                     />
                 </View>
@@ -154,7 +161,7 @@ const Profile = () => {
                     className='mx-4 mt-6 py-4 rounded-2xl border border-accent items-center'
                     onPress={signOut}
                 >
-                    <Text className='text-accent font-semibold text-base'>Log out</Text>
+                    <Text className='text-accent font-semibold text-base'>{t('common.logout')}</Text>
                 </TouchableOpacity>
             </ScrollView>
         </View>

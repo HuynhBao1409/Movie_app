@@ -9,10 +9,13 @@ import useFetch from "@/services/useFetch";
 import { useIsFocused } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, FlatList, Image, ScrollView, Text, View } from "react-native";
 
 // === Home page ===
 export default function Index() {
+  // === Translation ===
+  const { t } = useTranslation();
   // --- Navigation & Focus State ---
   const router = useRouter();
   const isFocused = useIsFocused();
@@ -76,12 +79,12 @@ export default function Index() {
           // SearchBar
           < View className="flex-1 mt-5">
             <SearchBar
-              onPress={() => router.push("/(tabs)/search")} placeholder="Search for a movie"
+              onPress={() => router.push("/(tabs)/search")} placeholder={t('home.searchPlaceholder')}
             />
             {/* Trending Movies */}
             {trendingMovies && (
               <View className="mt-10">
-                <Text className="text-lg text-white font-bold mb-3">Trending Movies</Text>
+                <Text className="text-lg text-white font-bold mb-3">{t('home.trending')}</Text>
               </View>
             )}
 
@@ -100,7 +103,7 @@ export default function Index() {
               />
 
               {/* Latest Movies Section */}
-              <Text className="text-lg text-white font-bold mt-5 mb-3">Latest Movies</Text>
+              <Text className="text-lg text-white font-bold mt-5 mb-3">{t('home.latest')}</Text>
 
               <FlatList
                 data={movies}

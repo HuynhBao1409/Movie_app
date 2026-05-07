@@ -13,12 +13,14 @@ interface Movie {
   video: boolean;
   vote_average: number;
   vote_count: number;
+  original_title: string;
 }
 
 interface TrendingMovie {
   searchTerm: string;
   movie_id: number;
   title: string;
+  original_title: string;
   count: number;
   poster_url: string;
   vote_average: number;

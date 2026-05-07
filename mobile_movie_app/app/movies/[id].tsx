@@ -5,6 +5,7 @@ import { WatchStatus } from '@/services/savedMovies';
 import useFetch from '@/services/useFetch';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FlatList, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 interface MovieInfoProps {
@@ -25,12 +26,14 @@ const MovieInfo = ({ label, value }: MovieInfoProps) => (
 
 // ===== COMPONENT: MovieDetails =====
 const MovieDetails = () => {
-
+    // === Translation ===
+    const { t } = useTranslation();
+    const { i18n } = useTranslation();
     // ===== PARAMS & DATA FETCH =====
     const { id } = useLocalSearchParams();
-    const { data: movie, loading } = useFetch(() => fetchMovieDetails(id as string));
-    const { data: credits } = useFetch(() => fetchMovieCredits(id as string));
-    const { data: similarMovies } = useFetch(() => fetchSimilarMovies(id as string));
+    const { data: movie, loading, refetch } = useFetch(() => fetchMovieDetails(id as string));
+    const { data: credits, refetch: refetchCredits } = useFetch(() => fetchMovieCredits(id as string));
+    const { data: similarMovies, refetch: refetchSimilar } = useFetch(() => fetchSimilarMovies(id as string));
 
     // ===== SAVED STATE =====
     const { save, remove, getStatus } = useSavedMovies();
@@ -42,6 +45,13 @@ const MovieDetails = () => {
             getStatus(movie.id).then(setSavedStatus);
         }
     }, [movie?.id]);
+
+    // Refetch khi đổi ngôn ngữ
+    useEffect(() => {
+        refetch();
+        refetchCredits();
+        refetchSimilar();
+    }, [i18n.language]);
 
     // Xử lý save/unsave movie theo status
     const handleSave = async (status: WatchStatus) => {
@@ -55,6 +65,7 @@ const MovieDetails = () => {
             await save({
                 id: movie.id,
                 title: movie.title,
+                original_title: movie.original_title,
                 poster_path: movie.poster_path ?? '',
                 vote_average: movie.vote_average ?? 0,
                 release_date: movie.release_date ?? '',
@@ -67,16 +78,16 @@ const MovieDetails = () => {
 
     // 3 nút save
     const SAVE_BUTTONS: { label: string; value: WatchStatus }[] = [
-        { label: 'Wishlist', value: 'wishlist' },
-        { label: 'Watching', value: 'watching' },
-        { label: 'Watched', value: 'watched' },
+        { label: t('movie.wishlist'), value: 'wishlist' },
+        { label: t('movie.watching'), value: 'watching' },
+        { label: t('movie.watched'), value: 'watched' },
     ];
 
     // ===== LOADING STATE =====
     if (loading) {
         return (
             <View className='flex-1 items-center justify-center bg-primary'>
-                <Text className='text-light-200'>Loading...</Text>
+                <Text className='text-light-200'>{t('movie.loading')}</Text>
             </View>
         );
     }
@@ -102,13 +113,17 @@ const MovieDetails = () => {
 
                     {/* ===== Title + Play Button ===== */}
                     <View className='flex-row items-center justify-between w-full mt-5'>
-                        <Text
-                            className='text-white font-bold text-xl flex-1 mr-3'
-                            numberOfLines={1}
-                            ellipsizeMode='tail'
-                        >
-                            {movie?.title ?? 'Untitled'}
-                        </Text>
+                        <View className='flex-1 mr-3'>
+                            <Text className='text-white font-bold text-xl' numberOfLines={1}>
+                                {movie?.original_title ?? movie?.title ?? t('movie.untitled')}
+                            </Text>
+                            {/* Tên tiếng Việt */}
+                            {i18n.language === 'vi' && movie?.original_title !== movie?.title && (
+                                <Text className='text-light-300 text-sm mt-0.5' numberOfLines={1}>
+                                    {movie?.title}
+                                </Text>
+                            )}
+                        </View>
                         <TouchableOpacity
                             className='bg-accent rounded-full w-12 h-12 items-center justify-center'
                             onPress={() => { }}
@@ -136,7 +151,7 @@ const MovieDetails = () => {
                             {(movie?.vote_average ?? 0).toFixed(1)}/10
                         </Text>
                         <Text className='text-light-200 text-sm'>
-                            ({movie?.vote_count ?? 0} votes)
+                            ({movie?.vote_count ?? 0} {t('movie.votes')}))
                         </Text>
                     </View>
 
@@ -147,8 +162,8 @@ const MovieDetails = () => {
                                 key={btn.value}
                                 onPress={() => handleSave(btn.value)}
                                 className={`flex-1 py-2 rounded-lg items-center border ${savedStatus === btn.value
-                                        ? 'bg-accent border-accent'
-                                        : 'border-dark-100'
+                                    ? 'bg-accent border-accent'
+                                    : 'border-dark-100'
                                     }`}
                             >
                                 <Text className='text-white text-xs font-semibold'>
@@ -159,36 +174,36 @@ const MovieDetails = () => {
                     </View>
 
                     {/* ===== Overview ===== */}
-                    <MovieInfo label='Overview' value={movie?.overview ?? 'N/A'} />
+                    <MovieInfo label={t('movie.overview')} value={movie?.overview ?? 'N/A'} />
 
                     {/* ===== Genres ===== */}
                     <MovieInfo
-                        label='Genres'
+                        label={t('movie.genres')}
                         value={movie?.genres?.map((g) => g.name).join(' - ') || 'N/A'}
                     />
 
                     {/* ===== Budget & Revenue ===== */}
                     <View className='flex flex-row justify-between w-1/2 gap-x-4'>
                         <MovieInfo
-                            label='Budget'
-                            value={`$${((movie?.budget ?? 0) / 1_000_000).toFixed(0)} million`}
+                            label={t('movie.budget')}
+                            value={`$${((movie?.budget ?? 0) / 1_000_000).toFixed(2)} ${t('movie.million')}`}
                         />
                         <MovieInfo
-                            label='Revenue'
-                            value={`$${((movie?.revenue ?? 0) / 1_000_000).toFixed(3)} million`}
+                            label={t('movie.revenue')}
+                            value={`$${((movie?.revenue ?? 0) / 1_000_000).toFixed(2)} ${t('movie.million')}`}
                         />
                     </View>
 
                     {/* ===== Production Companies ===== */}
                     <MovieInfo
-                        label='Production Companies'
+                        label={t('movie.productionCompanies')}
                         value={movie?.production_companies?.map((c) => c.name).join(' - ') || 'N/A'}
                     />
 
                     {/* ===== Cast (horizontal scroll, top 10) ===== */}
                     {credits && credits.length > 0 && (
                         <View className='mt-5 w-full'>
-                            <Text className='text-white font-bold text-sm mb-3'>Cast</Text>
+                            <Text className='text-white font-bold text-sm mb-3'>{t('movie.cast')}</Text>
                             <FlatList
                                 horizontal
                                 showsHorizontalScrollIndicator={false}
@@ -221,7 +236,7 @@ const MovieDetails = () => {
                     {/* ===== Similar Movies (horizontal scroll, top 10) ===== */}
                     {similarMovies && similarMovies.length > 0 && (
                         <View className='mt-6 w-full'>
-                            <Text className='text-white font-bold text-sm mb-3'>Similar Movies</Text>
+                            <Text className='text-white font-bold text-sm mb-3'>{t('movie.similar')}</Text>
                             <FlatList
                                 horizontal
                                 showsHorizontalScrollIndicator={false}
@@ -241,8 +256,13 @@ const MovieDetails = () => {
                                             resizeMode='cover'
                                         />
                                         <Text className='text-white text-xs mt-1 w-28' numberOfLines={1}>
-                                            {item.title}
+                                            {item.original_title ?? item.title}
                                         </Text>
+                                        {i18n.language === 'vi' && item.original_title !== item.title && (
+                                            <Text className='text-light-300 text-xs mt-0.5 w-28' numberOfLines={1}>
+                                                {item.title}
+                                            </Text>
+                                        )}
                                     </TouchableOpacity>
                                 )}
                             />
@@ -258,7 +278,7 @@ const MovieDetails = () => {
                 onPress={router.back}
             >
                 <Image source={icons.arrow} className='size-5 mr-1 mt-0.5 rotate-180' tintColor="#fff" />
-                <Text className='text-white font-semibold text-base'>Go back</Text>
+                <Text className='text-white font-semibold text-base'>{t('movie.goBack')}</Text>
             </TouchableOpacity>
         </View>
     );

@@ -1,3 +1,4 @@
+import '@/constants/i18n';
 import { AuthProvider } from '@/context/AuthContext';
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";

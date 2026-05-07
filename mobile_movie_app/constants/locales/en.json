@@ -1,0 +1,90 @@
+{
+    "common": {
+        "logout": "Log out",
+        "save": "Save",
+        "ok": "OK",
+        "error": "Error"
+    },
+    "tabs": {
+        "home": "Home",
+        "search": "Search",
+        "saved": "Saved",
+        "profile": "Profile",
+        "notifications": "Notifications"
+    },
+    "sections": {
+        "profile": "Profile",
+        "preferences": "Preferences",
+        "notifications": "Notifications",
+        "account": "Account"
+    },
+    "profile": {
+        "editProfile": "Edit Profile",
+        "savedMovies": "Saved Movies",
+        "language": "Language",
+        "darkMode": "Dark Mode",
+        "notifications": "Notifications",
+        "donations": "Donations",
+        "changePassword": "Change Password",
+        "about": "About"
+    },
+    "editProfile": {
+        "title": "Edit Profile",
+        "tapToChange": "Tap to change photo",
+        "avatarSoon": "(Avatar upload coming soon)",
+        "email": "Email",
+        "username": "Username",
+        "usernamePlaceholder": "Enter username",
+        "bio": "Bio",
+        "bioPlaceholder": "Tell us about yourself...",
+        "phone": "Phone",
+        "phonePlaceholder": "Enter phone number",
+        "showFull": "Show full",
+        "hideTail": "Hide tail",
+        "usernameRequired": "Username cannot be empty",
+        "updateSuccess": "Profile updated!",
+        "updateFailed": "Update failed",
+        "permissionRequired": "Permission required",
+        "photoLibraryAccess": "Please allow access to your photo library"
+    },
+    "home": {
+        "trending": "Trending Movies",
+        "latest": "Latest Movies",
+        "searchPlaceholder": "Search for a movie"
+    },
+    "notifications": {
+        "title": "Notifications",
+        "markAllRead": "Mark all read",
+        "empty": "No notifications yet"
+    },
+    "saved": {
+        "title": "My movie list",
+        "wishlist": "Wishlist",
+        "watching": "Watching",
+        "watched": "Watched",
+        "empty": "You haven't added any movies to this list"
+    },
+    "search": {
+        "placeholder": "Search movies...",
+        "resultsFor": "Search Results for",
+        "noMovies": "No movies found",
+        "startSearch": "Search for a movie"
+    },
+    "movie": {
+        "loading": "Loading...",
+        "untitled": "Untitled",
+        "overview": "Overview",
+        "genres": "Genres",
+        "budget": "Budget",
+        "revenue": "Revenue",
+        "million": "million",
+        "productionCompanies": "Production Companies",
+        "cast": "Cast",
+        "similar": "Similar Movies",
+        "wishlist": "Wishlist",
+        "watching": "Watching",
+        "watched": "Watched",
+        "goBack": "Go back",
+        "votes": "votes"
+    }
+}

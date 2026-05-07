@@ -1,0 +1,90 @@
+{
+    "common": {
+        "logout": "Đăng xuất",
+        "save": "Lưu",
+        "ok": "OK",
+        "error": "Lỗi"
+    },
+    "tabs": {
+        "home": "Trang chủ",
+        "search": "Tìm kiếm",
+        "saved": "Đã lưu",
+        "profile": "Hồ sơ",
+        "notifications": "Thông báo"
+    },
+    "sections": {
+        "profile": "Hồ sơ",
+        "preferences": "Tùy chỉnh",
+        "notifications": "Thông báo",
+        "account": "Tài khoản"
+    },
+    "profile": {
+        "editProfile": "Chỉnh sửa hồ sơ",
+        "savedMovies": "Phim đã lưu",
+        "language": "Ngôn ngữ",
+        "darkMode": "Chế độ tối",
+        "notifications": "Thông báo",
+        "donations": "Ủng hộ",
+        "changePassword": "Đổi mật khẩu",
+        "about": "Giới thiệu"
+    },
+    "editProfile": {
+        "title": "Chỉnh sửa hồ sơ",
+        "tapToChange": "Nhấn để đổi ảnh",
+        "avatarSoon": "(Tính năng đang phát triển)",
+        "email": "Email",
+        "username": "Tên người dùng",
+        "usernamePlaceholder": "Nhập tên người dùng",
+        "bio": "Giới thiệu bản thân",
+        "bioPlaceholder": "Hãy giới thiệu bản thân...",
+        "phone": "Số điện thoại",
+        "phonePlaceholder": "Nhập số điện thoại",
+        "showFull": "Hiện đầy đủ",
+        "hideTail": "Ẩn đuôi",
+        "usernameRequired": "Tên người dùng không được để trống",
+        "updateSuccess": "Cập nhật thành công!",
+        "updateFailed": "Cập nhật thất bại",
+        "permissionRequired": "Cần quyền truy cập",
+        "photoLibraryAccess": "Vui lòng cho phép truy cập thư viện ảnh của bạn"
+    },
+    "home": {
+        "trending": "Phim thịnh hành",
+        "latest": "Phim mới nhất",
+        "searchPlaceholder": "Tìm kiếm phim"
+    },
+    "notifications": {
+        "title": "Thông báo",
+        "markAllRead": "Đánh dấu đã đọc",
+        "empty": "Chưa có thông báo nào"
+    },
+    "saved": {
+        "title": "Danh sách phim",
+        "wishlist": "Muốn xem",
+        "watching": "Đang xem",
+        "watched": "Đã xem",
+        "empty": "Chưa có phim nào trong danh sách này"
+    },
+    "search": {
+        "placeholder": "Tìm kiếm phim...",
+        "resultsFor": "Kết quả cho",
+        "noMovies": "Không tìm thấy phim",
+        "startSearch": "Tìm kiếm một bộ phim"
+    },
+    "movie": {
+        "loading": "Đang tải...",
+        "untitled": "Không có tiêu đề",
+        "overview": "Tổng quan",
+        "genres": "Thể loại",
+        "budget": "Ngân sách",
+        "revenue": "Doanh thu",
+        "million": "triệu",
+        "productionCompanies": "Hãng sản xuất",
+        "cast": "Diễn viên",
+        "similar": "Phim tương tự",
+        "wishlist": "Muốn xem",
+        "watching": "Đang xem",
+        "watched": "Đã xem",
+        "goBack": "Quay lại",
+        "votes": "lượt"
+    }
+}

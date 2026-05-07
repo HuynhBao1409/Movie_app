@@ -6,9 +6,12 @@ import { fetchMovies } from '@/services/api'
 import { updateSearchCount } from '@/services/appwrite'
 import useFetch from '@/services/useFetch'
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ActivityIndicator, FlatList, Image, Text, View } from 'react-native'
 // === Search page ===
 const Search = () => {
+    // === Translation ===
+    const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState('');
 
     // --- Fetch Movies by Query ---
@@ -70,7 +73,7 @@ const Search = () => {
                         {/* Search Input Field */}
                         <View className='my-5'>
                             <SearchBar
-                                placeholder='Search movies...'
+                                placeholder={t('search.placeholder')}
                                 value={searchQuery}
                                 onChangeText={(text: string) => setSearchQuery(text)}
                             />
@@ -91,7 +94,7 @@ const Search = () => {
                         {/* Search Results Header */}
                         {!loading && !error && searchQuery.trim() && (movies?.length ?? 0) > 0 && (
                             <Text className='text-xl text-white font-bold'>
-                                Search Results for {' '}
+                                {t('search.resultsFor')} {' '}
                                 <Text className='text-accent'>{searchQuery}</Text>
                             </Text>
                         )}
@@ -103,7 +106,7 @@ const Search = () => {
                     !loading && !error ? (
                         <View className='mt-10 px-5'>
                             <Text className='text-center text-gray-500'>
-                                {searchQuery.trim() ? 'No movies found' : 'Search for a movies'}
+                                {searchQuery.trim() ? t('search.noMovies') : t('search.startSearch')}
                             </Text>
                         </View>
                     ) : null

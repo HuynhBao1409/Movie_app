@@ -4,6 +4,7 @@ import { updateProfile } from '@/services/auth';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     ActivityIndicator, Alert, Image,
     ScrollView,
@@ -13,6 +14,8 @@ import {
 
 export default function EditProfile() {
     const { profile, user, setProfile } = useAuth();
+    // === Translation ===
+    const { t } = useTranslation();
 
     const [username, setUsername] = useState(profile?.username ?? '');
     const [bio, setBio] = useState(profile?.bio ?? '');
@@ -33,7 +36,7 @@ export default function EditProfile() {
     const pickImage = async () => {
         const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (!permission.granted) {
-            Alert.alert('Permission required', 'Please allow access to your photo library');
+            Alert.alert(t('editProfile.permissionRequired'), t('editProfile.photoLibraryAccess'));
             return;
         }
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -51,7 +54,7 @@ export default function EditProfile() {
     const handleSave = async () => {
         if (!profile?.$id) return;
         if (!username.trim()) {
-            Alert.alert('Error', 'Username cannot be empty');
+            Alert.alert(t('common.error'), t('editProfile.usernameRequired'));
             return;
         }
         try {
@@ -70,11 +73,11 @@ export default function EditProfile() {
                 phone: phone.trim(),
                 avatar_url: avatarUri ?? profile.avatar_url,
             });
-            Alert.alert('Success', 'Profile updated!', [
-                { text: 'OK', onPress: () => router.replace('/(tabs)/profile') }
+            Alert.alert('Success', t('editProfile.updateSuccess'), [
+                { text: t('common.ok'), onPress: () => router.replace('/(tabs)/profile') }
             ]);
         } catch (e: any) {
-            Alert.alert('Error', e?.message ?? 'Update failed');
+            Alert.alert(t('common.error'), e?.message ?? t('editProfile.updateFailed'));
         } finally {
             setLoading(false);
         }
@@ -88,13 +91,13 @@ export default function EditProfile() {
                     <TouchableOpacity onPress={() => router.replace('/(tabs)/profile')} className='mr-4'>
                         <Image source={icons.arrow} className='size-5 rotate-180' tintColor='#fff' />
                     </TouchableOpacity>
-                    <Text className='text-white text-lg font-bold flex-1'>Edit Profile</Text>
+                    <Text className='text-white text-lg font-bold flex-1'>{t('editProfile.title')}</Text>
                     {/* Nút Save  */}
                     <TouchableOpacity onPress={handleSave} disabled={loading}>
                         {loading ? (
                             <ActivityIndicator color='#E50914' />
                         ) : (
-                            <Text className='text-accent font-semibold text-base'>Save</Text>
+                            <Text className='text-accent font-semibold text-base'>{t('common.save')}</Text>
                         )}
                     </TouchableOpacity>
                 </View>
@@ -121,25 +124,25 @@ export default function EditProfile() {
                             <Text className='text-white text-2xl'>📷</Text>
                         </View>
                     </TouchableOpacity>
-                    <Text className='text-light-300 text-xs mt-2'>Tap to change photo</Text>
+                    <Text className='text-light-300 text-xs mt-2'>{t('editProfile.tapToChange')}</Text>
                     <Text className='text-light-300 text-xs mt-1'>
-                        (Avatar upload coming soon)
+                        {t('editProfile.avatarSoon')}
                     </Text>
                 </View>
 
                 {/* ===== Form ===== */}
                 <View className='px-5'>
                     {/* Email — readonly */}
-                    <Text className='text-light-300 text-xs uppercase tracking-widest mb-2'>Email</Text>
+                    <Text className='text-light-300 text-xs uppercase tracking-widest mb-2'>{t('editProfile.email')}</Text>
                     <View className='bg-dark-100 rounded-xl px-4 py-3.5 mb-5'>
                         <Text className='text-light-300'>{user?.email}</Text>
                     </View>
 
                     {/* Username */}
-                    <Text className='text-light-300 text-xs uppercase tracking-widest mb-2'>Username</Text>
+                    <Text className='text-light-300 text-xs uppercase tracking-widest mb-2'>{t('editProfile.username')}</Text>
                     <TextInput
                         className='bg-secondary text-white rounded-xl px-4 py-3.5 mb-5'
-                        placeholder='Enter username'
+                        placeholder={t('editProfile.usernamePlaceholder')}
                         placeholderTextColor='#9CA4AB'
                         value={username}
                         onChangeText={setUsername}
@@ -147,10 +150,10 @@ export default function EditProfile() {
                     />
 
                     {/* Bio */}
-                    <Text className='text-light-300 text-xs uppercase tracking-widest mb-2'>Bio</Text>
+                    <Text className='text-light-300 text-xs uppercase tracking-widest mb-2'>{t('editProfile.bio')}</Text>
                     <TextInput
                         className='bg-secondary text-white rounded-xl px-4 py-3.5 mb-5'
-                        placeholder='Tell us about yourself...'
+                        placeholder={t('editProfile.bioPlaceholder')}
                         placeholderTextColor='#9CA4AB'
                         value={bio}
                         onChangeText={setBio}
@@ -161,16 +164,16 @@ export default function EditProfile() {
 
                     {/* Phone */}
                     <View className='flex-row items-center justify-between mb-2'>
-                        <Text className='text-light-300 text-xs uppercase tracking-widest'>Phone</Text>
+                        <Text className='text-light-300 text-xs uppercase tracking-widest'>{t('editProfile.phone')}</Text>
                         <TouchableOpacity onPress={() => setHidePhoneTail((prev) => !prev)}>
                             <Text className='text-accent text-xs font-semibold'>
-                                {hidePhoneTail ? 'Show full' : 'Hide tail'}
+                                {hidePhoneTail ? t('editProfile.showFull') : t('editProfile.hideTail')}
                             </Text>
                         </TouchableOpacity>
                     </View>
                     <TextInput
                         className='bg-secondary text-white rounded-xl px-4 py-3.5'
-                        placeholder='Enter phone number'
+                        placeholder={t('editProfile.phonePlaceholder')}
                         placeholderTextColor='#9CA4AB'
                         value={displayedPhone}
                         onChangeText={setPhone}

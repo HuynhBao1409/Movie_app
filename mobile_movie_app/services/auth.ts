@@ -51,10 +51,11 @@ export const login = async (emailOrUsername: string, password: string) => {
         email = found;
     }
 
+    // Tạo session đăng nhập bằng email + password
     await account.createEmailPasswordSession(email, password);
     const user = await account.get();
     const profile = await getProfile(user.$id);
-    return { user, role: profile?.role ?? 'user' };
+    return { user, role: profile?.role ?? 'user' }; // Trả về user + role (mặc định là 'user' nếu không có role)
 };
 
 // ===== LOGOUT =====

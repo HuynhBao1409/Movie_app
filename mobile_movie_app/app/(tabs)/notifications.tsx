@@ -1,6 +1,7 @@
 import { icons } from '@/constants/icons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 
 type NotificationType = 'new_release' | 'donation';
@@ -43,6 +44,8 @@ const MOCK_NOTIFICATIONS: Notification[] = [
 ];
 
 const Notifications = () => {
+    // === Translation ===
+    const { t } = useTranslation();
     const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
 
     // Đánh dấu tất cả là đã đọc
@@ -59,10 +62,10 @@ const Notifications = () => {
                 <TouchableOpacity onPress={router.back}>
                     <Image source={icons.arrow} className='size-5 rotate-180' tintColor='#fff' />
                 </TouchableOpacity>
-                <Text className='text-white text-lg font-bold'>Notifications</Text>
+                <Text className='text-white text-lg font-bold'>{t('notifications.title')}</Text>
                 {unreadCount > 0 ? (
                     <TouchableOpacity onPress={markAllRead}>
-                        <Text className='text-accent text-xs font-semibold'>Mark all read</Text>
+                        <Text className='text-accent text-xs font-semibold'>{t('notifications.markAllRead')}</Text>
                     </TouchableOpacity>
                 ) : (
                     <View className='w-16' />
@@ -73,7 +76,7 @@ const Notifications = () => {
             {notifications.length === 0 ? (
                 <View className='flex-1 items-center justify-center'>
                     <Image source={icons.bell} className='size-12 mb-4' tintColor='#9CA4AB' />
-                    <Text className='text-light-300 text-base'>No notifications yet</Text>
+                    <Text className='text-light-300 text-base'>{t('notifications.empty')}</Text>
                 </View>
             ) : (
                 <FlatList

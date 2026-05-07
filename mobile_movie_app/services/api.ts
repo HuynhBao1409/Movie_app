@@ -1,3 +1,7 @@
+// Map ngôn ngữ app → TMDB language code
+import i18n from '@/constants/i18n';
+const getLang = () => i18n.language === 'vi' ? 'vi-VN' : 'en-US';
+
 // API config và các hàm call TMDB
 export const TMDB_CONFIG = {
     BASE_URL: 'https://api.themoviedb.org/3',
@@ -49,8 +53,8 @@ export const fetchMovies = async ({ query }: { query: string }) => {
 
     // Nếu có query → gọi API search, không có → lấy phim phổ biến nhất
     const endpoint = cleanQuery
-        ? `${TMDB_CONFIG.BASE_URL}/search/movie?query=${encodeURIComponent(cleanQuery)}&include_adult=false&language=en-US&page=1`
-        : `${TMDB_CONFIG.BASE_URL}/discover/movie?sort_by=popularity.desc`;
+        ? `${TMDB_CONFIG.BASE_URL}/search/movie?query=${encodeURIComponent(cleanQuery)}&include_adult=false&language=${getLang()}&page=1`
+        : `${TMDB_CONFIG.BASE_URL}/discover/movie?sort_by=popularity.desc&language=${getLang()}`;
     const response = await fetch(endpoint, { method: 'GET', headers: TMDB_CONFIG.headers, });
 
     if (!response.ok) {
@@ -88,7 +92,7 @@ export const fetchMovies = async ({ query }: { query: string }) => {
 export const fetchMovieDetails = async (movieId: string): Promise<MovieDetails> => {
     try {
         // ===== GỬI REQUEST TỚI TMDB API =====
-        const response = await fetch(`${TMDB_CONFIG.BASE_URL}/movie/${movieId}?api_key=${TMDB_CONFIG.API_KEY}`, {
+        const response = await fetch(`${TMDB_CONFIG.BASE_URL}/movie/${movieId}?api_key=${TMDB_CONFIG.API_KEY}&language=${getLang()}`, {
             method: 'GET',
             headers: TMDB_CONFIG.headers,
         });
@@ -110,7 +114,7 @@ export const fetchMovieDetails = async (movieId: string): Promise<MovieDetails> 
 export const fetchMovieCredits = async (movieId: string) => {
     // Gọi API với `api_key` trong query string để đảm bảo TMDB cho phép request
     const response = await fetch(
-        `${TMDB_CONFIG.BASE_URL}/movie/${movieId}/credits?api_key=${TMDB_CONFIG.API_KEY}`,
+        `${TMDB_CONFIG.BASE_URL}/movie/${movieId}/credits?api_key=${TMDB_CONFIG.API_KEY}&language=${getLang()}`,
         { method: 'GET', headers: TMDB_CONFIG.headers }
     );
     if (!response.ok) throw new Error('Failed to fetch credits');

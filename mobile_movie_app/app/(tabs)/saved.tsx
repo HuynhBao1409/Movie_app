@@ -3,6 +3,7 @@ import { WatchStatus } from '@/services/savedMovies';
 import { useIsFocused } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     ActivityIndicator,
     FlatList,
@@ -12,27 +13,28 @@ import {
     View,
 } from 'react-native';
 
-const TABS: { label: string; value: WatchStatus }[] = [
-    { label: 'Wishlist', value: 'wishlist' },
-    { label: 'Watching', value: 'watching' },
-    { label: 'Watched', value: 'watched' },
-];
-
 const Saved = () => {
     const router = useRouter();
     const isFocused = useIsFocused();
     const { loading, byStatus, remove, reload } = useSavedMovies();
+    // === Translation ===
+    const { t, i18n } = useTranslation();
     const [activeTab, setActiveTab] = useState<WatchStatus>('wishlist');
+    const TABS: { label: string; value: WatchStatus }[] = [
+        { label: t('saved.wishlist'), value: 'wishlist' },
+        { label: t('saved.watching'), value: 'watching' },
+        { label: t('saved.watched'), value: 'watched' },
+    ];
 
     // Reload khi quay lại tab
-    useEffect(() => { if (isFocused) reload(); }, [isFocused]);
+    useEffect(() => { if (isFocused) reload(); }, [isFocused, reload]);
 
     const movies = byStatus(activeTab);
 
     return (
         <View className="flex-1 bg-primary pt-16 px-5">
             <Text className="text-white text-2xl font-bold text-center mb-6">
-                My movie list
+                {t('saved.title')}
             </Text>
 
             {/* Tab Bar */}
@@ -62,7 +64,7 @@ const Saved = () => {
             ) : movies.length === 0 ? (
                 <View className="flex-1 items-center justify-center">
                     <Text className="text-gray-500 text-base text-center">
-                        You are not more movies to this list
+                        {t('saved.empty')}
                     </Text>
                 </View>
             ) : (
@@ -83,12 +85,15 @@ const Saved = () => {
                                 className="w-full h-40 rounded-lg"
                                 resizeMode="cover"
                             />
-                            <Text
-                                className="text-white text-md mt-1"
-                                numberOfLines={1}
-                            >
-                                {item.title}
+                            {/* Title */}
+                            <Text className="text-white text-xs mt-1" numberOfLines={1}>
+                                {item.original_title ?? item.title}
                             </Text>
+                            {i18n.language === 'vi' && item.original_title !== item.title && (
+                                <Text className="text-light-300 text-xs mt-0.5" numberOfLines={1}>
+                                    {item.title}
+                                </Text>
+                            )}
                         </TouchableOpacity>
                     )}
                 />
