@@ -87,7 +87,7 @@ const Saved = () => {
                             />
                             {/* Title */}
                             <Text className="text-white text-xs mt-1" numberOfLines={1}>
-                                {item.original_title ?? item.title}
+                                {item.title}
                             </Text>
                             {i18n.language === 'vi' && item.original_title !== item.title && (
                                 <Text className="text-light-300 text-xs mt-0.5" numberOfLines={1}>

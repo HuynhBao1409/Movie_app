@@ -50,7 +50,7 @@ export default function RootLayout() {
             style={{ width: `${progress}%` }}
           />
         </View>
-        {/* ống hiện phần trăm load */}
+        {/* hiện phần trăm load */}
         {/* <Text className="text-zinc-300 text-sm mt-3">Loading {progress}%</Text> */}
       </View>
     );

@@ -44,7 +44,7 @@ const TrendingCard = ({ movie: { movie_id, title, original_title, poster_url, vo
 
                 {/* Movie Title */}
                 <Text className='text-sm font-bold mt-2 text-light-200' numberOfLines={2}>
-                    {original_title ?? title}
+                    {title}
                 </Text>
                 {showBoth && (
                     <Text className='text-xs text-light-300 mt-0.5' numberOfLines={1}>{title}</Text>

@@ -1,9 +1,13 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Client, Databases, ID, Query } from 'react-native-appwrite';
 
-// Module quản lý danh sách phim đã lưu (local storage)
-// - Lưu trữ bằng `AsyncStorage` dưới key `STORAGE_KEY`
-// - Các hàm xuất ra (getSavedMovies, saveMovie, removeMovie, getMovieStatus)
-//   dùng trong hook `useSavedMovies` để quản lý UI
+const client = new Client()
+    .setEndpoint(process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT ?? 'https://nyc.cloud.appwrite.io/v1')
+    .setProject(process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!);
+
+const database = new Databases(client);
+
+const DB_ID = process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!;
+const SAVED_COLLECTION_ID = process.env.EXPO_PUBLIC_APPWRITE_SAVED_COLLECTION_ID!;
 
 export type WatchStatus = 'wishlist' | 'watching' | 'watched';
 
@@ -15,45 +19,78 @@ export interface SavedMovie {
     vote_average: number;
     release_date: string;
     status: WatchStatus;
-    savedAt: string; // ISO timestamp khi lưu
+    savedAt: string;
 }
 
-const STORAGE_KEY = '@saved_movies';
-
-// Lấy toàn bộ phim đã lưu từ AsyncStorage
-// Trả về mảng `SavedMovie[]`. Nếu có lỗi sẽ trả về mảng rỗng.
-export const getSavedMovies = async (): Promise<SavedMovie[]> => {
+// Lấy toàn bộ phim đã lưu theo user
+export const getSavedMovies = async (userId: string): Promise<SavedMovie[]> => {
     try {
-        const data = await AsyncStorage.getItem(STORAGE_KEY);
-        return data ? JSON.parse(data) : [];
+        const res = await database.listDocuments(DB_ID, SAVED_COLLECTION_ID, [
+            Query.equal('user_id', userId),
+            Query.orderDesc('saved_at'),
+        ]);
+        return res.documents.map((doc) => ({
+            id: doc.movie_id,
+            title: doc.title,
+            original_title: doc.original_title,
+            poster_path: doc.poster_path,
+            vote_average: doc.vote_average,
+            release_date: doc.release_date,
+            status: doc.status as WatchStatus,
+            savedAt: doc.saved_at,
+        }));
     } catch {
         return [];
     }
 };
 
-// Lưu hoặc cập nhật một phim
-// - Nếu phim đã tồn tại (cùng id) sẽ cập nhật record (ví dụ thay đổi status)
-// - Nếu chưa tồn tại sẽ đẩy vào cuối mảng
-export const saveMovie = async (movie: SavedMovie): Promise<void> => {
-    const movies = await getSavedMovies();
-    const existingIdx = movies.findIndex((m) => m.id === movie.id);
-    if (existingIdx >= 0) {
-        movies[existingIdx] = movie; // update status nếu đã có
+// Lưu hoặc cập nhật phim
+export const saveMovie = async (userId: string, movie: SavedMovie): Promise<void> => {
+    // Check xem đã lưu chưa
+    const existing = await database.listDocuments(DB_ID, SAVED_COLLECTION_ID, [
+        Query.equal('user_id', userId),
+        Query.equal('movie_id', movie.id),
+    ]);
+
+    const payload = {
+        user_id: userId,
+        movie_id: movie.id,
+        title: movie.title,
+        original_title: movie.original_title ?? '',
+        poster_path: movie.poster_path,
+        vote_average: movie.vote_average,
+        release_date: movie.release_date,
+        status: movie.status,
+        saved_at: movie.savedAt,
+    };
+
+    if (existing.documents.length > 0) {
+        // Update status nếu đã có
+        await database.updateDocument(DB_ID, SAVED_COLLECTION_ID, existing.documents[0].$id, payload);
     } else {
-        movies.push(movie);
+        await database.createDocument(DB_ID, SAVED_COLLECTION_ID, ID.unique(), payload);
     }
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(movies));
 };
 
 // Xoá phim theo movieId
-export const removeMovie = async (movieId: number): Promise<void> => {
-    const movies = await getSavedMovies();
-    const filtered = movies.filter((m) => m.id !== movieId);
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+export const removeMovie = async (userId: string, movieId: number): Promise<void> => {
+    const existing = await database.listDocuments(DB_ID, SAVED_COLLECTION_ID, [
+        Query.equal('user_id', userId),
+        Query.equal('movie_id', movieId),
+    ]);
+    if (existing.documents.length > 0) {
+        await database.deleteDocument(DB_ID, SAVED_COLLECTION_ID, existing.documents[0].$id);
+    }
 };
 
-// Lấy trạng thái (WatchStatus) của một phim đã lưu, hoặc null nếu chưa lưu
-export const getMovieStatus = async (movieId: number): Promise<WatchStatus | null> => {
-    const movies = await getSavedMovies();
-    return movies.find((m) => m.id === movieId)?.status ?? null;
+// Lấy status của phim
+export const getMovieStatus = async (userId: string, movieId: number): Promise<WatchStatus | null> => {
+    const existing = await database.listDocuments(DB_ID, SAVED_COLLECTION_ID, [
+        Query.equal('user_id', userId),
+        Query.equal('movie_id', movieId),
+    ]);
+    if (existing.documents.length > 0) {
+        return existing.documents[0].status as WatchStatus;
+    }
+    return null;
 };

@@ -115,7 +115,7 @@ const MovieDetails = () => {
                     <View className='flex-row items-center justify-between w-full mt-5'>
                         <View className='flex-1 mr-3'>
                             <Text className='text-white font-bold text-xl' numberOfLines={1}>
-                                {movie?.original_title ?? movie?.title ?? t('movie.untitled')}
+                                {movie?.title ?? t('movie.untitled')}
                             </Text>
                             {/* Tên tiếng Việt */}
                             {i18n.language === 'vi' && movie?.original_title !== movie?.title && (
