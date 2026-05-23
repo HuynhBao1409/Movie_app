@@ -304,7 +304,7 @@ const MovieDetails = () => {
                                 ItemSeparatorComponent={() => <View className='w-3' />}
                                 renderItem={({ item }) => (
                                     // replace thay vì push để không stack màn hình
-                                    <TouchableOpacity onPress={() => router.replace(`/movies/ ${item.id}`)}>
+                                    <TouchableOpacity onPress={() => router.replace(`/movies/${item.id}`)}>
                                         <Image
                                             source={{
                                                 uri: item.poster_path
