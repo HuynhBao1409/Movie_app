@@ -1,12 +1,13 @@
 import { icons } from '@/constants/icons';
 import { useSavedMovies } from '@/hooks/useSavedMovies';
-import { fetchMovieCredits, fetchMovieDetails, fetchSimilarMovies } from '@/services/api';
+import { fetchMovieCredits, fetchMovieDetails, fetchMovieVideos, fetchSimilarMovies } from '@/services/api';
 import { WatchStatus } from '@/services/savedMovies';
 import useFetch from '@/services/useFetch';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import YoutubePlayer from 'react-native-youtube-iframe';
 
 interface MovieInfoProps {
     label: string;
@@ -24,6 +25,8 @@ const MovieInfo = ({ label, value }: MovieInfoProps) => (
     </View>
 )
 
+
+
 // ===== COMPONENT: MovieDetails =====
 const MovieDetails = () => {
     // === Translation ===
@@ -38,7 +41,12 @@ const MovieDetails = () => {
     // ===== SAVED STATE =====
     const { save, remove, getStatus } = useSavedMovies();
     const [savedStatus, setSavedStatus] = useState<WatchStatus | null>(null);
+    const [selectedTrailer, setSelectedTrailer] = useState<any>(null);
 
+    // ===== Trailers =====
+    const { data: trailers } = useFetch(() => fetchMovieVideos(id as string));
+    console.log('TRAILERS:', trailers);
+    const { width } = useWindowDimensions();
     // Load trạng thái saved khi có movie id
     useEffect(() => {
         if (movie?.id) {
@@ -126,7 +134,12 @@ const MovieDetails = () => {
                         </View>
                         <TouchableOpacity
                             className='bg-accent rounded-full w-12 h-12 items-center justify-center'
-                            onPress={() => { }}
+                            onPress={() => {
+                                // Play the first available trailer when header play pressed
+                                if (trailers && trailers.length > 0) {
+                                    setSelectedTrailer(trailers[0]);
+                                }
+                            }}
                         >
                             <Image source={icons.play} className='size-5' tintColor="#fff" />
                         </TouchableOpacity>
@@ -233,6 +246,57 @@ const MovieDetails = () => {
                         </View>
                     )}
 
+                    {/* ===== Trailers ===== */}
+                    {trailers && trailers.length > 0 && (
+                        <View className='mt-6 w-full'>
+                            <Text className='text-white font-bold text-sm mb-3'>
+                                {t('movie.trailers')}
+                            </Text>
+
+                            {/* Player - chỉ hiện khi đã chọn */}
+                            {selectedTrailer && (
+                                <View className='mb-3'>
+                                    <YoutubePlayer
+                                        height={(width - 40) * 9 / 16}
+                                        width={width - 40}
+                                        videoId={selectedTrailer.key}
+                                        play={true}
+                                    />
+                                    <Text className='text-light-200 text-xs mt-1'>
+                                        {selectedTrailer.name}
+                                    </Text>
+                                </View>
+                            )}
+
+                            {/* Thumbnail row */}
+                            <FlatList
+                                horizontal
+                                showsHorizontalScrollIndicator={false}
+                                data={trailers.slice(0, 6)}
+                                keyExtractor={(item) => item.id}
+                                ItemSeparatorComponent={() => <View className='w-2' />}
+                                renderItem={({ item }) => (
+                                    <TouchableOpacity
+                                        onPress={() => setSelectedTrailer(item)}
+                                        className={`rounded-lg overflow-hidden border-2 ${selectedTrailer?.id === item.id
+                                            ? 'border-accent'
+                                            : 'border-transparent'
+                                            }`}
+                                    >
+                                        <Image
+                                            source={{ uri: `https://img.youtube.com/vi/${item.key}/mqdefault.jpg` }}
+                                            className='w-36 h-20'
+                                            resizeMode='cover'
+                                        />
+                                        <Text className='text-white text-xs mt-1 w-36' numberOfLines={1}>
+                                            {item.name}
+                                        </Text>
+                                    </TouchableOpacity>
+                                )}
+                            />
+                        </View>
+                    )}
+
                     {/* ===== Similar Movies (horizontal scroll, top 10) ===== */}
                     {similarMovies && similarMovies.length > 0 && (
                         <View className='mt-6 w-full'>
@@ -270,17 +334,17 @@ const MovieDetails = () => {
                     )}
 
                 </View>
-            </ScrollView>
+            </ScrollView >
 
             {/* ===== Back Button (fixed bottom) ===== */}
-            <TouchableOpacity
+            < TouchableOpacity
                 className='absolute bottom-5 left-0 right-0 mx-5 bg-accent rounded-lg py-3.5 flex flex-row items-center justify-center z-50'
                 onPress={router.back}
             >
                 <Image source={icons.arrow} className='size-5 mr-1 mt-0.5 rotate-180' tintColor="#fff" />
                 <Text className='text-white font-semibold text-base'>{t('movie.goBack')}</Text>
-            </TouchableOpacity>
-        </View>
+            </TouchableOpacity >
+        </View >
     );
 }
 

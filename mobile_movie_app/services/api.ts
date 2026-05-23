@@ -136,3 +136,15 @@ export const fetchSimilarMovies = async (movieId: string) => {
     // API trả về { page, results: [...], total_pages, total_results }
     return data.results as Movie[];
 }
+// Lấy trailer movies
+export const fetchMovieVideos = async (movieId: string) => {
+    const response = await fetch(
+        `${TMDB_CONFIG.BASE_URL}/movie/${movieId}/videos`,
+        { method: 'GET', headers: TMDB_CONFIG.headers }
+    );
+    const data = await response.json();
+    console.log('VIDEO RAW:', JSON.stringify(data));
+    return data.results?.filter(
+        (v: any) => v.site === 'YouTube'
+    ) ?? [];
+};
