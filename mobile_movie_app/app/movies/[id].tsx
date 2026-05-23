@@ -134,12 +134,7 @@ const MovieDetails = () => {
                         </View>
                         <TouchableOpacity
                             className='bg-accent rounded-full w-12 h-12 items-center justify-center'
-                            onPress={() => {
-                                // Play the first available trailer when header play pressed
-                                if (trailers && trailers.length > 0) {
-                                    setSelectedTrailer(trailers[0]);
-                                }
-                            }}
+                            onPress={() => { }}
                         >
                             <Image source={icons.play} className='size-5' tintColor="#fff" />
                         </TouchableOpacity>
@@ -309,7 +304,7 @@ const MovieDetails = () => {
                                 ItemSeparatorComponent={() => <View className='w-3' />}
                                 renderItem={({ item }) => (
                                     // replace thay vì push để không stack màn hình
-                                    <TouchableOpacity onPress={() => router.replace(`/movies/${item.id}`)}>
+                                    <TouchableOpacity onPress={() => router.replace(`/ movies / ${item.id}`)}>
                                         <Image
                                             source={{
                                                 uri: item.poster_path
