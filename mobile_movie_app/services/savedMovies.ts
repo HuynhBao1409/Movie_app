@@ -1,3 +1,4 @@
+import { fetchMovieDetails } from '@/services/api';
 import { Client, Databases, ID, Query } from 'react-native-appwrite';
 
 const client = new Client()
@@ -15,6 +16,7 @@ export interface SavedMovie {
     id: number;
     title: string;
     original_title?: string;
+    localized_title?: string;
     poster_path: string;
     vote_average: number;
     release_date: string;
@@ -29,15 +31,38 @@ export const getSavedMovies = async (userId: string): Promise<SavedMovie[]> => {
             Query.equal('user_id', userId),
             Query.orderDesc('saved_at'),
         ]);
-        return res.documents.map((doc) => ({
-            id: doc.movie_id,
-            title: doc.title,
-            original_title: doc.original_title,
-            poster_path: doc.poster_path,
-            vote_average: doc.vote_average,
-            release_date: doc.release_date,
-            status: doc.status as WatchStatus,
-            savedAt: doc.saved_at,
+
+        return await Promise.all(res.documents.map(async (doc) => {
+            try {
+                const [englishMovie, vietnameseMovie] = await Promise.all([
+                    fetchMovieDetails(String(doc.movie_id), 'en-US'),
+                    fetchMovieDetails(String(doc.movie_id), 'vi-VN'),
+                ]);
+
+                return {
+                    id: doc.movie_id,
+                    title: englishMovie?.title ?? doc.title,
+                    original_title: englishMovie?.original_title ?? doc.original_title,
+                    localized_title: vietnameseMovie?.title ?? doc.localized_title,
+                    poster_path: doc.poster_path,
+                    vote_average: doc.vote_average,
+                    release_date: doc.release_date,
+                    status: doc.status as WatchStatus,
+                    savedAt: doc.saved_at,
+                };
+            } catch {
+                return {
+                    id: doc.movie_id,
+                    title: doc.title,
+                    original_title: doc.original_title,
+                    localized_title: doc.localized_title,
+                    poster_path: doc.poster_path,
+                    vote_average: doc.vote_average,
+                    release_date: doc.release_date,
+                    status: doc.status as WatchStatus,
+                    savedAt: doc.saved_at,
+                };
+            }
         }));
     } catch {
         return [];

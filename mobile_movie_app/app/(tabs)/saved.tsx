@@ -85,13 +85,13 @@ const Saved = () => {
                                 className="w-full h-40 rounded-lg"
                                 resizeMode="cover"
                             />
-                            {/* Title */}
+                            {/* Title chính */}
                             <Text className="text-white text-xs mt-1" numberOfLines={1}>
                                 {item.title}
                             </Text>
-                            {i18n.language === 'vi' && item.original_title !== item.title && (
+                            {i18n.language === 'vi' && item.localized_title && item.localized_title !== item.title && (
                                 <Text className="text-light-300 text-xs mt-0.5" numberOfLines={1}>
-                                    {item.title}
+                                    {item.localized_title}
                                 </Text>
                             )}
                         </TouchableOpacity>

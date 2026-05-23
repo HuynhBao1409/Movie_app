@@ -4,10 +4,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 
-const MovieCard = ({ id, poster_path, title, vote_average, release_date, original_title }: Movie) => {
+const MovieCard = ({ id, poster_path, title, vote_average, release_date, original_title, localized_title }: Movie & { localized_title?: string }) => {
     //Translation
     const { i18n } = useTranslation();
-    const showBoth = i18n.language === 'vi' && original_title !== title;
+    const subtitleTitle = i18n.language === 'vi' ? localized_title : undefined;
 
     console.log(poster_path);
     return (
@@ -21,15 +21,15 @@ const MovieCard = ({ id, poster_path, title, vote_average, release_date, origina
                     className="w-full h-52 rounded-lg" resizeMode="cover"
                 />
 
-                {/* Title gốc  */}
+                {/* Title gốc */}
                 <Text className="text-sm font-bold text-white mt-2" numberOfLines={1}>
                     {title}
                 </Text>
 
-                {/* Tên tiếng Việt */}
-                {showBoth && (
+                {/* Tên phụ theo ngôn ngữ Việt */}
+                {subtitleTitle && subtitleTitle !== title && (
                     <Text className="text-xs text-light-300 mt-0.5" numberOfLines={1}>
-                        {title}
+                        {subtitleTitle}
                     </Text>
                 )}
                 {/* Star */}

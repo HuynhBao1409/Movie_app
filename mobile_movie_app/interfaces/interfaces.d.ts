@@ -1,6 +1,7 @@
 interface Movie {
   id: number;
   title: string;
+  localized_title?: string;
   adult: boolean;
   backdrop_path: string;
   genre_ids: number[];
@@ -21,6 +22,7 @@ interface TrendingMovie {
   movie_id: number;
   title: string;
   original_title: string;
+  localized_title?: string;
   count: number;
   poster_url: string;
   vote_average: number;

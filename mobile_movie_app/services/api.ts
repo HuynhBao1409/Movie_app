@@ -12,6 +12,41 @@ export const TMDB_CONFIG = {
     }
 }
 
+const fetchMoviesByLanguage = async ({ query, language }: { query: string; language: string }) => {
+    const cleanQuery = query.trim();
+
+    // Có query thì search theo từ khóa, không có thì lấy phim phổ biến.
+    const endpoint = cleanQuery
+        ? `${TMDB_CONFIG.BASE_URL}/search/movie?query=${encodeURIComponent(cleanQuery)}&include_adult=false&language=${language}&page=1`
+        : `${TMDB_CONFIG.BASE_URL}/discover/movie?sort_by=popularity.desc&language=${language}`;
+
+    const response = await fetch(endpoint, { method: 'GET', headers: TMDB_CONFIG.headers });
+
+    // Nếu TMDB trả lỗi thì dừng luôn để tầng UI bắt và báo lỗi.
+    if (!response.ok) {
+        throw new Error(`Failed to fetch movies: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const results: Movie[] = data.results ?? [];
+
+    // Không search thì giữ nguyên kết quả từ TMDB.
+    if (!cleanQuery) {
+        return results;
+    }
+
+    // Search thì sort lại: khớp title trước, rồi vote_count, rồi popularity.
+    return [...results].sort((a, b) => {
+        const scoreDiff = getSearchScore(b, cleanQuery) - getSearchScore(a, cleanQuery);
+        if (scoreDiff !== 0) return scoreDiff;
+
+        const voteDiff = (b.vote_count ?? 0) - (a.vote_count ?? 0);
+        if (voteDiff !== 0) return voteDiff;
+
+        return (b.popularity ?? 0) - (a.popularity ?? 0);
+    });
+}
+
 // Chuẩn hoá chuỗi để so sánh tìm kiếm
 // - Chuyển về chữ thường, loại bỏ dấu (diacritics) và trim
 const normalizeText = (value: string = '') =>
@@ -51,50 +86,36 @@ const getSearchScore = (movie: Movie, rawQuery: string) => {
 
 // Lấy danh sách phim phổ biến
 export const fetchMovies = async ({ query }: { query: string }) => {
-    const cleanQuery = query.trim();
+    // Luôn lấy bản tiếng Anh trước để title chính của UI ổn định.
+    const englishResults = await fetchMoviesByLanguage({ query, language: 'en-US' });
 
-    // Nếu có query → gọi API search, không có → lấy phim phổ biến nhất
-    const endpoint = cleanQuery
-        ? `${TMDB_CONFIG.BASE_URL}/search/movie?query=${encodeURIComponent(cleanQuery)}&include_adult=false&language=${getLang()}&page=1`
-        : `${TMDB_CONFIG.BASE_URL}/discover/movie?sort_by=popularity.desc&language=${getLang()}`;
-    const response = await fetch(endpoint, { method: 'GET', headers: TMDB_CONFIG.headers, });
-
-    if (!response.ok) {
-        throw new Error(`Failed to fetch movies: ${response.statusText}`);
+    // Nếu app không ở tiếng Việt thì trả luôn danh sách tiếng Anh.
+    if (i18n.language !== 'vi') {
+        return englishResults;
     }
 
-    const data = await response.json();
+    // Nếu đang ở tiếng Việt, gọi thêm 1 lần với vi-VN để lấy title phụ tương ứng.
+    const vietnameseResults = await fetchMoviesByLanguage({ query, language: 'vi-VN' });
+    // Map theo movie.id để ghép title Việt vào đúng phim tiếng Anh ở trên.
+    const vietnameseTitleMap = new Map(
+        vietnameseResults.map((movie) => [movie.id, movie.title])
+    );
 
-    const results: Movie[] = data.results ?? [];
-
-    // Không có query thì TMDB đã sort sẵn theo popularity, trả về luôn
-    if (!cleanQuery) {
-        return results;
-    }
-
-    // Có query → sort lại theo thứ tự ưu tiên:
-    return [...results].sort((a, b) => {
-        // 1. Ưu tiên phim có điểm khớp tên cao hơn
-        const scoreDiff = getSearchScore(b, cleanQuery) - getSearchScore(a, cleanQuery);
-        if (scoreDiff !== 0) return scoreDiff;
-
-        // 2. Nếu bằng điểm → ưu tiên phim có nhiều lượt vote hơn 
-        const voteDiff = (b.vote_count ?? 0) - (a.vote_count ?? 0);
-        if (voteDiff !== 0) return voteDiff;
-
-        // 3. Vẫn bằng nhau → ưu tiên phim phổ biến hơn
-        return (b.popularity ?? 0) - (a.popularity ?? 0);
-    });
+    // Giữ nguyên dữ liệu tiếng Anh, chỉ gắn thêm localized_title cho UI hiển thị dòng phụ.
+    return englishResults.map((movie) => ({
+        ...movie,
+        localized_title: vietnameseTitleMap.get(movie.id),
+    }));
 }
 
 
 // ===== FUNCTION: fetchMovieDetails =====
 // Lấy chi tiết đầy đủ của một bộ phim từ TMDB API
 // Trả về: Promise<MovieDetails> chứa tất cả dữ liệu phim (poster, title, budget, revenue, genres, v.v.)
-export const fetchMovieDetails = async (movieId: string): Promise<MovieDetails> => {
+export const fetchMovieDetails = async (movieId: string, language: string = getLang()): Promise<MovieDetails> => {
     try {
         // ===== GỬI REQUEST TỚI TMDB API =====
-        const response = await fetch(`${TMDB_CONFIG.BASE_URL}/movie/${movieId}?api_key=${TMDB_CONFIG.API_KEY}&language=${getLang()}`, {
+        const response = await fetch(`${TMDB_CONFIG.BASE_URL}/movie/${movieId}?api_key=${TMDB_CONFIG.API_KEY}&language=${language}`, {
             method: 'GET',
             headers: TMDB_CONFIG.headers,
         });
@@ -128,9 +149,9 @@ export const fetchMovieCredits = async (movieId: string) => {
 // Lấy phim tương tự (similar movies)
 // - Gọi endpoint `/movie/{movieId}/similar` và trả về danh sách phim tương tự
 // - Trả về: `Movie[]` (mảng kết quả giống format của `/search` hoặc `/discover`)
-export const fetchSimilarMovies = async (movieId: string) => {
+export const fetchSimilarMovies = async (movieId: string, language: string = 'en-US') => {
     const response = await fetch(
-        `${TMDB_CONFIG.BASE_URL}/movie/${movieId}/similar?api_key=${TMDB_CONFIG.API_KEY}`,
+        `${TMDB_CONFIG.BASE_URL}/movie/${movieId}/similar?api_key=${TMDB_CONFIG.API_KEY}&language=${language}`,
         { method: 'GET', headers: TMDB_CONFIG.headers }
     );
     if (!response.ok) throw new Error('Failed to fetch similar movies');

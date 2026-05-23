@@ -34,9 +34,11 @@ const MovieDetails = () => {
     const { i18n } = useTranslation();
     // ===== PARAMS & DATA FETCH =====
     const { id } = useLocalSearchParams();
-    const { data: movie, loading, refetch } = useFetch(() => fetchMovieDetails(id as string));
+    const { data: movie, loading, refetch } = useFetch(() => fetchMovieDetails(id as string, 'en-US'));
+    const { data: localizedMovie } = useFetch(() => fetchMovieDetails(id as string, 'vi-VN'));
     const { data: credits, refetch: refetchCredits } = useFetch(() => fetchMovieCredits(id as string));
-    const { data: similarMovies, refetch: refetchSimilar } = useFetch(() => fetchSimilarMovies(id as string));
+    const { data: similarMovies, refetch: refetchSimilar } = useFetch(() => fetchSimilarMovies(id as string, 'en-US'));
+    const { data: localizedSimilarMovies } = useFetch(() => fetchSimilarMovies(id as string, 'vi-VN'));
 
     // ===== SAVED STATE =====
     const { save, remove, getStatus } = useSavedMovies();
@@ -74,6 +76,7 @@ const MovieDetails = () => {
                 id: movie.id,
                 title: movie.title,
                 original_title: movie.original_title,
+                localized_title: localizedMovie?.title ?? '',
                 poster_path: movie.poster_path ?? '',
                 vote_average: movie.vote_average ?? 0,
                 release_date: movie.release_date ?? '',
@@ -126,9 +129,9 @@ const MovieDetails = () => {
                                 {movie?.title ?? t('movie.untitled')}
                             </Text>
                             {/* Tên tiếng Việt */}
-                            {i18n.language === 'vi' && movie?.original_title !== movie?.title && (
+                            {i18n.language === 'vi' && localizedMovie?.title && localizedMovie.title !== movie?.title && (
                                 <Text className='text-light-300 text-sm mt-0.5' numberOfLines={1}>
-                                    {movie?.title}
+                                    {localizedMovie.title}
                                 </Text>
                             )}
                         </View>
@@ -296,6 +299,12 @@ const MovieDetails = () => {
                     {similarMovies && similarMovies.length > 0 && (
                         <View className='mt-6 w-full'>
                             <Text className='text-white font-bold text-sm mb-3'>{t('movie.similar')}</Text>
+                            {(() => {
+                                const localizedSimilarTitleMap = new Map(
+                                    (localizedSimilarMovies ?? []).map((movie) => [movie.id, movie.title])
+                                );
+
+                                return (
                             <FlatList
                                 horizontal
                                 showsHorizontalScrollIndicator={false}
@@ -315,16 +324,18 @@ const MovieDetails = () => {
                                             resizeMode='cover'
                                         />
                                         <Text className='text-white text-xs mt-1 w-28' numberOfLines={1}>
-                                            {item.original_title ?? item.title}
+                                            {item.title}
                                         </Text>
-                                        {i18n.language === 'vi' && item.original_title !== item.title && (
+                                        {i18n.language === 'vi' && localizedSimilarTitleMap.get(item.id) && localizedSimilarTitleMap.get(item.id) !== item.title && (
                                             <Text className='text-light-300 text-xs mt-0.5 w-28' numberOfLines={1}>
-                                                {item.title}
+                                                {localizedSimilarTitleMap.get(item.id)}
                                             </Text>
                                         )}
                                     </TouchableOpacity>
                                 )}
                             />
+                                );
+                            })()}
                         </View>
                     )}
 
