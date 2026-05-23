@@ -1,4 +1,5 @@
 import { icons } from "@/constants/icons";
+import { images } from "@/constants/images";
 import { fetchStreamUrl } from "@/services/api";
 import { router, useLocalSearchParams } from "expo-router";
 import * as ScreenOrientation from 'expo-screen-orientation';
@@ -44,29 +45,37 @@ export default function PlayerScreen() {
     );
 
     return (
-        <View className="flex-1 bg-black items-center justify-center">
-            {/* Title */}
-            <Text className="text-white font-bold text-base px-5 mb-4" numberOfLines={1}>
-                {title}
-            </Text>
+        <View className="flex-1 bg-primary items-center justify-center">
+            <Image source={images.bg} className="absolute inset-0 w-full  z-0" resizeMode="cover" tintColor="#E50914" />
 
-            {/* Video - cỡ vừa 16:9, bấm fullscreen để xem to */}
-            <VideoView
-                ref={ref}
-                player={player}
-                style={{ width: '100%', aspectRatio: 16 / 9 }}
-                allowsFullscreen
-                allowsPictureInPicture
-                nativeControls
-            />
+            <View className="absolute top-16 items-center z-10">
+                <Image source={icons.logo} className="w-14 h-12" resizeMode="contain" />
+            </View>
 
-            <Text className="text-zinc-500 text-xs mt-4 px-5 text-center">
-                App đang trong giai đoạn phát triển.Sẽ cật nhật tính năng sau!
-            </Text>
+            <View className="w-[92%] max-w-[420px] items-center z-10">
+                {/* Title */}
+                <Text className="text-white font-bold text-base px-5 mb-4 text-center" numberOfLines={1}>
+                    {title}
+                </Text>
+
+                {/* Video - cỡ vừa 16:9, bấm fullscreen để xem to */}
+                <VideoView
+                    ref={ref}
+                    player={player}
+                    style={{ width: '100%', aspectRatio: 16 / 9 }}
+                    allowsFullscreen
+                    allowsPictureInPicture
+                    nativeControls
+                />
+
+                <Text className="text-zinc-500 text-xs mt-4 px-5 text-center">
+                    App đang trong giai đoạn phát triển.Sẽ cật nhật tính năng sau!
+                </Text>
+            </View>
 
             {/* ===== Back Button (fixed bottom) ===== */}
             <TouchableOpacity
-                className='absolute bottom-5 left-0 right-0 mx-5 bg-accent rounded-lg py-3.5 flex flex-row items-center justify-center z-50'
+                className='absolute bottom-5 w-[92%] max-w-[420px] bg-accent rounded-lg py-3.5 flex flex-row items-center justify-center z-50'
                 onPress={router.back}
             >
                 <Image source={icons.arrow} className='size-5 mr-1 mt-0.5 rotate-180' tintColor="#fff" />

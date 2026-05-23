@@ -305,35 +305,35 @@ const MovieDetails = () => {
                                 );
 
                                 return (
-                            <FlatList
-                                horizontal
-                                showsHorizontalScrollIndicator={false}
-                                data={similarMovies.slice(0, 10)}
-                                keyExtractor={(item) => String(item.id)}
-                                ItemSeparatorComponent={() => <View className='w-3' />}
-                                renderItem={({ item }) => (
-                                    // replace thay vì push để không stack màn hình
-                                    <TouchableOpacity onPress={() => router.replace(`/movies/${item.id}`)}>
-                                        <Image
-                                            source={{
-                                                uri: item.poster_path
-                                                    ? `https://image.tmdb.org/t/p/w185${item.poster_path}`
-                                                    : 'https://via.placeholder.com/185x280?text=N/A',
-                                            }}
-                                            className='w-28 h-40 rounded-lg'
-                                            resizeMode='cover'
-                                        />
-                                        <Text className='text-white text-xs mt-1 w-28' numberOfLines={1}>
-                                            {item.title}
-                                        </Text>
-                                        {i18n.language === 'vi' && localizedSimilarTitleMap.get(item.id) && localizedSimilarTitleMap.get(item.id) !== item.title && (
-                                            <Text className='text-light-300 text-xs mt-0.5 w-28' numberOfLines={1}>
-                                                {localizedSimilarTitleMap.get(item.id)}
-                                            </Text>
+                                    <FlatList
+                                        horizontal
+                                        showsHorizontalScrollIndicator={false}
+                                        data={similarMovies.slice(0, 10)}
+                                        keyExtractor={(item) => String(item.id)}
+                                        ItemSeparatorComponent={() => <View className='w-3' />}
+                                        renderItem={({ item }) => (
+                                            // replace thay vì push để không stack màn hình
+                                            <TouchableOpacity onPress={() => router.replace(`/movies/${item.id}`)}>
+                                                <Image
+                                                    source={{
+                                                        uri: item.poster_path
+                                                            ? `https://image.tmdb.org/t/p/w185${item.poster_path}`
+                                                            : 'https://via.placeholder.com/185x280?text=N/A',
+                                                    }}
+                                                    className='w-28 h-40 rounded-lg'
+                                                    resizeMode='cover'
+                                                />
+                                                <Text className='text-white text-xs mt-1 w-28' numberOfLines={1}>
+                                                    {item.title}
+                                                </Text>
+                                                {i18n.language === 'vi' && localizedSimilarTitleMap.get(item.id) && localizedSimilarTitleMap.get(item.id) !== item.title && (
+                                                    <Text className='text-light-300 text-xs mt-0.5 w-28' numberOfLines={1}>
+                                                        {localizedSimilarTitleMap.get(item.id)}
+                                                    </Text>
+                                                )}
+                                            </TouchableOpacity>
                                         )}
-                                    </TouchableOpacity>
-                                )}
-                            />
+                                    />
                                 );
                             })()}
                         </View>
