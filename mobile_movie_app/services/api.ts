@@ -31,10 +31,12 @@ const getSearchScore = (movie: Movie, rawQuery: string) => {
     const tokens = query.split(/\s+/).filter(Boolean); // Tách query thành từng từ, vd: "spider man" → ["spider", "man"]
 
     let score = 0;
-
-    if (title === query || originalTitle === query) score += 1000;   // Ưu tiên cao nhất: tên khớp chính xác 100% với query
-    if (title.startsWith(query) || originalTitle.startsWith(query)) score += 500; // Ưu tiên thứ hai: tên bắt đầu bằng query, vd: query "spider" → "Spider-Man" 
-    if (title.includes(query) || originalTitle.includes(query)) score += 250;  // Ưu tiên thứ ba: tên chứa query ở bất kỳ vị trí nào
+    // Ưu tiên cao nhất: tên khớp chính xác 100% với query
+    if (title === query || originalTitle === query) score += 1000;
+    // Ưu tiên thứ hai: tên bắt đầu bằng query, vd: query "spider" → "Spider-Man" 
+    if (title.startsWith(query) || originalTitle.startsWith(query)) score += 500;
+    // Ưu tiên thứ ba: tên chứa query ở bất kỳ vị trí nào
+    if (title.includes(query) || originalTitle.includes(query)) score += 250;
 
     // Đếm số từ đơn lẻ trong query khớp với tên phim, mỗi từ khớp +80 điểm
     const matchedTokenCount = tokens.filter((token) =>
@@ -99,7 +101,7 @@ export const fetchMovieDetails = async (movieId: string): Promise<MovieDetails> 
 
         if (!response.ok) throw new Error('Failed to fetch movie detail');
 
-        const data = await response.json();
+        const data = await response.json(); // gửi response thanh JSON
 
         return data;
     } catch (error) {
@@ -110,7 +112,7 @@ export const fetchMovieDetails = async (movieId: string): Promise<MovieDetails> 
 
 // Lấy danh sách diễn viên (credits)
 // - Gọi endpoint `/movie/{movieId}/credits` và trả về mảng `cast`
-// - Trả về: `Cast[]` (id, name, character, profile_path)
+// - Trả về: `Cast[]` 
 export const fetchMovieCredits = async (movieId: string) => {
     // Gọi API với `api_key` trong query string để đảm bảo TMDB cho phép request
     const response = await fetch(
@@ -119,8 +121,8 @@ export const fetchMovieCredits = async (movieId: string) => {
     );
     if (!response.ok) throw new Error('Failed to fetch credits');
     const data = await response.json();
-    // API trả về object chứa { id, cast: [...], crew: [...] } 
-    return data.cast as Cast[]; // top cast
+    // API trả về object 
+    return data.cast as Cast[];
 }
 
 // Lấy phim tương tự (similar movies)
@@ -133,7 +135,7 @@ export const fetchSimilarMovies = async (movieId: string) => {
     );
     if (!response.ok) throw new Error('Failed to fetch similar movies');
     const data = await response.json();
-    // API trả về { page, results: [...], total_pages, total_results }
+    // API trả về
     return data.results as Movie[];
 }
 // Lấy trailer movies
@@ -144,7 +146,25 @@ export const fetchMovieVideos = async (movieId: string) => {
     );
     const data = await response.json();
     console.log('VIDEO RAW:', JSON.stringify(data));
+    //trả về nếu có chỉ lấy site ytb nếu ko cho rỗng
     return data.results?.filter(
         (v: any) => v.site === 'YouTube'
     ) ?? [];
+};
+
+// Tìm link stream từ OPhim theo tên phim
+export const fetchStreamUrl = async (movieTitle: string) => {
+    //gọi api tìm kiếm của Ophim bằng keyword,chỉ lấy kết quả gần nhất
+    const res = await fetch(
+        `https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(movieTitle)}&limit=1`
+    );
+    const data = await res.json();
+    const slug = data?.data?.items?.[0]?.slug; //lấy slug đầu tiên trong ds
+    if (!slug) return null;
+
+    // gọi API chi tiết theo slug vừa tìm được.
+    const detail = await fetch(`https://ophim1.com/v1/api/phim/${slug}`);
+    const detailData = await detail.json();
+    // Lấy link tập đầu tiên
+    return detailData?.data?.item?.episodes?.[0]?.server_data?.[0]?.link_m3u8 ?? null;
 };

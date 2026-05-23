@@ -23,7 +23,7 @@ const MovieCard = ({ id, poster_path, title, vote_average, release_date, origina
 
                 {/* Title gốc  */}
                 <Text className="text-sm font-bold text-white mt-2" numberOfLines={1}>
-                    {original_title ?? title}
+                    {title}
                 </Text>
 
                 {/* Tên tiếng Việt */}

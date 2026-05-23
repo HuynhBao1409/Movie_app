@@ -134,7 +134,7 @@ const MovieDetails = () => {
                         </View>
                         <TouchableOpacity
                             className='bg-accent rounded-full w-12 h-12 items-center justify-center'
-                            onPress={() => { }}
+                            onPress={() => router.push(`/movies/player?title=${encodeURIComponent(movie?.original_title ?? movie?.title ?? '')}`)}
                         >
                             <Image source={icons.play} className='size-5' tintColor="#fff" />
                         </TouchableOpacity>

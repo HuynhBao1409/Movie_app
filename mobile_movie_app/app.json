@@ -3,7 +3,6 @@
     "name": "MotChill",
     "slug": "mobile_movie_app",
     "version": "1.0.0",
-    "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "scheme": "mobilemovieapp",
     "userInterfaceStyle": "automatic",
@@ -35,7 +34,8 @@
           }
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": true,
