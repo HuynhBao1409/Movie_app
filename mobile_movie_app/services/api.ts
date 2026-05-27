@@ -27,7 +27,7 @@ const fetchMoviesByLanguage = async ({ query, language }: { query: string; langu
         throw new Error(`Failed to fetch movies: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data = await response.json(); // gửi response thành JSON
     const results: Movie[] = data.results ?? [];
 
     // Không search thì giữ nguyên kết quả từ TMDB.
@@ -122,7 +122,7 @@ export const fetchMovieDetails = async (movieId: string, language: string = getL
 
         if (!response.ok) throw new Error('Failed to fetch movie detail');
 
-        const data = await response.json(); // gửi response thanh JSON
+        const data = await response.json(); // gửi response thành JSON
 
         return data;
     } catch (error) {
@@ -173,19 +173,40 @@ export const fetchMovieVideos = async (movieId: string) => {
     ) ?? [];
 };
 
-// Tìm link stream từ OPhim theo tên phim
-export const fetchStreamUrl = async (movieTitle: string) => {
-    //gọi api tìm kiếm của Ophim bằng keyword,chỉ lấy kết quả gần nhất
-    const res = await fetch(
-        `https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(movieTitle)}&limit=1`
-    );
-    const data = await res.json();
-    const slug = data?.data?.items?.[0]?.slug; //lấy slug đầu tiên trong ds
-    if (!slug) return null;
 
-    // gọi API chi tiết theo slug vừa tìm được.
-    const detail = await fetch(`https://ophim1.com/v1/api/phim/${slug}`);
-    const detailData = await detail.json();
-    // Lấy link tập đầu tiên
-    return detailData?.data?.item?.episodes?.[0]?.server_data?.[0]?.link_m3u8 ?? null;
+
+// Tìm link stream từ OPhim theo tên phim
+// User bấm ▶ trên [id].tsx
+//     ↓
+// router.push(`/movies/player?title=${movie.original_title}`)
+//     ↓
+// player.tsx nhận title từ params
+//     ↓
+// fetchStreamUrl(title) → gọi OPhim API search bằng title đó
+//     ↓
+// OPhim trả về slug → gọi tiếp API chi tiết lấy link m3u8
+//     ↓
+// expo-video stream link đó
+export const fetchStreamUrl = async (movieTitle: string) => {
+    // Thử original_title trước, nếu miss thì thử bỏ bớt chữ
+    const keywords = [
+        movieTitle,
+        movieTitle.split(':')[0].trim(), // bỏ phần sau dấu : vd "Thor: Love" → "Thor"
+    ];
+
+    for (const keyword of keywords) {
+        const res = await fetch(
+            `https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}&limit=1`
+        );
+        const data = await res.json();
+        const slug = data?.data?.items?.[0]?.slug;
+        if (!slug) continue;
+
+        const detail = await fetch(`https://ophim1.com/v1/api/phim/${slug}`);
+        const detailData = await detail.json();
+        const url = detailData?.data?.item?.episodes?.[0]?.server_data?.[0]?.link_m3u8;
+        if (url) return url;
+    }
+
+    return null;
 };
